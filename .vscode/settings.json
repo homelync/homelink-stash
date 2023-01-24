@@ -1,0 +1,12 @@
+{
+    "mocha.requires": [
+        "ts-node/register"
+    ],
+    "mocha.files.glob": "src/test/**/*.spec.ts",
+    "mocha.parallelTests": 8,
+    "mocha.env": {
+        "NODE_ENV": "local",
+        "TZ": "UTC" // This
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

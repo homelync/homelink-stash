@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Launch Sink",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceRoot}/src/index.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "outputCapture": "std",
+            "envFile": "${workspaceFolder}/src/env/.env.local",
+            "env": {
+                "TZ": "UTC"
+            }
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Launch Tests (debug)",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}

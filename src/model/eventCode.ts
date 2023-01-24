@@ -1,0 +1,26 @@
+export enum EventCode {
+    apiRequestSent = 1001,
+    apiResponseReceived = 1002,
+    messageReceived = 1003,
+    lambdaRequest = 1004,
+    lambdaResponse = 1005,
+    queryExecuted = 1208,
+    messageProcessed = 1211,
+    messageBridged = 1212,
+    countMetric = 1210,
+    getLock = 1250,
+    lockHeld = 1251,
+    retryingMessage = 1252,
+    deadletteringMessage = 1253,
+    timingMetric = 1209,
+    temperatueError = 4527,
+    co2Error = 4528,
+    co2ZeroValue = 4529,
+    readingIngest = 1305,
+
+    rabbitConnect = 1760,
+    rabbitDisconnect = 4760,
+    rabbitConnectFailed = 5760,
+    rabbitUnblocked = 1761,
+    rabbitBlocked = 5761
+}
