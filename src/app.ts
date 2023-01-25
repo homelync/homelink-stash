@@ -11,6 +11,11 @@ let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
 
 export async function ensureSchema(): Promise<void> {
+
+    if (!configuration.enableDb) {
+        return;
+    }
+
     Logger.info('Initialising database schema');
     const dbConnection = DependencyInjectionContainer.get<SqlDbConnection>(TYPES.SqlDbConnection);
     const deviceTable = new DeviceTable(dbConnection);
