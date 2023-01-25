@@ -3,11 +3,11 @@
 Message consumer for homelink.
 
 ## Step 1
-Specify config your config:
+Specify config your config by copying the examples template from  [./src/envExample](./src/envExample) to [./src/env](./src/env) and poplulating with your details/settings:
 
-- local: [.env.local](./src/env/.env.local)
-- test: [.env.test](./src/env/.env.test)
-- production: [.env.production](./src/env/.env.production)
+- local: [.env.local](./src/envExample/.env.local)
+- test: [.env.test](./src/envExample/.env.test)
+- production: [.env.production](./src/envExample/.env.production)
 
 ## Build and Run Container
 
@@ -19,6 +19,20 @@ OR
 
 OR
 - $ `docker-compose -f docker-compose-production.yml`
+
+###
+
+```
+- Docker run command on windows (use powershell and execute from root of this repo):
+
+      docker run -d -h localhost  \
+           --name homelink-sink    \
+           --restart unless-stopped	 \
+           -e "NODE_ENV=local"   \
+           -v ${pwd}/src/env:/etc/homelink-sink/env \
+           homelinksink:latest
+
+```
 
 ## Database setup
 

@@ -6,8 +6,12 @@ import { configuration } from '../../config/config';
 @injectable()
 export class SqlDbConnection {
 
-    private knex: Knex;
+    private knex!: Knex;
     constructor() {
+
+        if (!configuration.enableDb) {
+            return;
+        }
 
         const sql = configuration.store;
         const options: any = {
@@ -34,10 +38,18 @@ export class SqlDbConnection {
     }
 
     public builder(tableName: string): Knex.QueryBuilder {
+        this.gaurd();
         return this.knex.table(tableName);
     }
 
     public knexRaw(): Knex {
+        this.gaurd();
         return this.knex;
+    }
+
+    private gaurd() {
+        if (!this.knex){
+            throw new Error('database is not enabled, ensure at least one output action is set to "database"');
+        }
     }
 }

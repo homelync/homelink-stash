@@ -56,13 +56,14 @@ const rabbitHostConfig: RabbitHostConfig = {
     publishTimeoutMs: 5000
 }
 
-const baseConfiguration = {
+const baseConfiguration: any = {
     environment: nodeEnv,
     deviceConsume: deviceRabbitConfig,
     alertConsume: alertRabbitConfig,
     rabbitHost: rabbitHostConfig,
     deviceActionType: env.DEVICE_ACTION,
     alertActionType: env.ALERT_ACTION,
+    enableDb: false,
     sns: {
         device: {
             clientId: env.SNS_DEVICE_CLIENTID,
@@ -81,6 +82,9 @@ const baseConfiguration = {
     },
     store: sqlConfig
 };
+
+baseConfiguration.enableDb = baseConfiguration.deviceActionType?.toLowerCase().includes('database')
+    || baseConfiguration.alertActionType?.toLowerCase().includes('database')
 
 export const configuration = baseConfiguration;
 
