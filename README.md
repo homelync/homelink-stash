@@ -3,11 +3,11 @@
 Message consumer for homelink.
 
 ## Step 1
-Specify config your config by copying the examples template from  [./src/envExample](./src/envExample) to [./src/env](./src/env) and poplulating with your details/settings:
+Specify config your config by copying the examples template from  [./src/envTemplate](./src/envTemplate) to [./src/env](./src/env) and poplulating with your details/settings:
 
-- local: [.env.local](./src/envExample/.env.local)
-- test: [.env.test](./src/envExample/.env.test)
-- production: [.env.production](./src/envExample/.env.production)
+- local: [.env.local](./src/envTemplate/.env.local)
+- test: [.env.test](./src/envTemplate/.env.test)
+- production: [.env.production](./src/envTemplate/.env.production)
 
 ## Build and Run Container
 
