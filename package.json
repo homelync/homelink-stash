@@ -23,7 +23,7 @@
     "test:integration": "mocha --exit --timeout 30000 --require ts-node/register src/test/integration/**/*.spec.ts",
     "test:integration:debug": "mocha --inspect-brk --exit --timeout 30000 --require ts-node/register src/test/integration/**/*.spec.ts",
     "test:ci": "cross-env NODE_ENV=development npm run test:integration && cross-env NODE_ENV=development npm run test:e2e",
-    "build": "npm run clean && tsc && npm run copy:env",
+    "build": "npm --version && tsc --version && npm run clean && tsc && npm run copy:env",
     "start": "cross-env TZ=UTC NODE_ENV=local ts-node-dev --respawn ./src",
     "start:local": "cross-env TZ=UTC NODE_ENV=local ts-node-dev --respawn ./src",
     "start:dev": "cross-env TZ=UTC NODE_ENV=development ts-node-dev --respawn ./src",

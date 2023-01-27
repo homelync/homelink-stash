@@ -12,7 +12,13 @@ import { ConsumerBase } from './consumerBase';
 import { SqlDbConnection } from './forward/db/SqlDbConnection';
 import { AlertClient } from './client/alertClient';
 import { AlertConsumer } from './alertConsumer';
-import { DeviceSnsClient, ISnsClient } from './forward/sns/snsClient';
+import { AlertSnsClient, DeviceSnsClient, ISnsClient, NotificationSnsClient, PropertySnsClient, ReadingSnsClient } from './forward/sns/snsClient';
+import { NotificationClient } from './client/notificationClient';
+import { PropertyClient } from './client/propertyClient';
+import { ReadingClient } from './client/readingClient';
+import { NotificationConsumer } from './notificationConsumer';
+import { PropertyConsumer } from './propertyConsumer';
+import { ReadingConsumer } from './readingConsumer';
 
 let DependencyInjectionContainer = new Container();
 
@@ -31,15 +37,34 @@ DependencyInjectionContainer.bind<SqlDbConnection>(TYPES.SqlDbConnection).to(Sql
 DependencyInjectionContainer.bind<IRabbitConnectionManager>(TYPES.RabbitConnectionManager).toConstantValue(rabbitConnectionManager);
 
 // Device
-DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.DeviceRabbitConfig).toConstantValue(configuration.deviceConsume);
+DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.DeviceRabbitConfig).toConstantValue(configuration.device.consume);
 DependencyInjectionContainer.bind<ServiceClient>(TYPES.DeviceClient).to(DeviceClient);
 DependencyInjectionContainer.bind<ConsumerBase>(TYPES.DeviceConsumer).to(DeviceConsumer);
 DependencyInjectionContainer.bind<ISnsClient>(TYPES.DeviceSnsClient).to(DeviceSnsClient);
 
 // Alert
-DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.AlertRabbitConfig).toConstantValue(configuration.alertConsume);
+DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.AlertRabbitConfig).toConstantValue(configuration.alert.consume);
 DependencyInjectionContainer.bind<ServiceClient>(TYPES.AlertClient).to(AlertClient);
 DependencyInjectionContainer.bind<ConsumerBase>(TYPES.AlertConsumer).to(AlertConsumer);
-// DependencyInjectionContainer.bind<ISnsClient>(TYPES.AlertSnsClient).to(AlertSnsClient);
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.AlertSnsClient).to(AlertSnsClient);
+
+// Notification
+DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.NotificationRabbitConfig).toConstantValue(configuration.alert.consume);
+DependencyInjectionContainer.bind<ServiceClient>(TYPES.NotificationClient).to(NotificationClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.NotificationConsumer).to(NotificationConsumer);
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.NotificationSnsClient).to(NotificationSnsClient);
+
+// Property
+DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.PropertyRabbitConfig).toConstantValue(configuration.alert.consume);
+DependencyInjectionContainer.bind<ServiceClient>(TYPES.PropertyClient).to(PropertyClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.PropertyConsumer).to(PropertyConsumer);
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.PropertySnsClient).to(PropertySnsClient);
+
+// Reading
+DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.ReadingRabbitConfig).toConstantValue(configuration.alert.consume);
+DependencyInjectionContainer.bind<ServiceClient>(TYPES.ReadingClient).to(ReadingClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.ReadingConsumer).to(ReadingConsumer);
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.ReadingSnsClient).to(ReadingSnsClient);
+
 
 export { DependencyInjectionContainer };

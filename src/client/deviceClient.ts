@@ -17,17 +17,16 @@ export class DeviceClient implements ServiceClient {
 
     async create(msg: ConsumeMessage, payload: MqttDevice) {
 
-        if (configuration.deviceActionType?.toLowerCase().includes('database')) {
-            Logger.debug(`Persistig to database ${configuration.store.database}`);
+        if (configuration.device.usesDb) {
+            Logger.debug(`Persisting to database ${configuration.store.database}`);
             await this.dbConnection.builder('homelink.device').insert(payload);
         }
 
-        if (configuration.deviceActionType?.toLowerCase().includes('sns')) {
-            if (!configuration.sns.device.topic) {
+        if (configuration.device.usesSns) {
+            if (!configuration.device.sns.topic) {
                 throw new Error('Device sns topic not configured add environment variable SNS_DEVICE_TOPIC');
             }
-            Logger.debug(`Publishing to sns topic ${configuration.sns.device.topic}`);
-            await this.snsClient.publish(configuration.sns.device.topic, payload);
+            this.snsClient.publish(configuration.device.sns.topic, payload);
         }
     }
 }

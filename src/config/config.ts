@@ -1,6 +1,6 @@
 import { resolve as pathResolve } from 'path';
 import { config } from 'dotenv';
-import { RabbitConsumeConfig, RabbitHostConfig } from './rabbitConfig';
+import { EntityConfig, RabbitConsumeConfig, RabbitHostConfig } from './rabbitConfig';
 import { SqlConfig, SqlDialect } from './sqlConfig';
 import { Logger } from '../utility/logger';
 
@@ -20,20 +20,24 @@ export function setEiPrefixClient(clientCode: string) {
     eiPrefixClients = clientCode;
 }
 
-const deviceRabbitConfig: RabbitConsumeConfig = {
-    deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.device-deadletter`,
-    queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.device`,
-    failedRoutingKey: '#',
-    maxRetry: 1,
-    enabled: !!(env.DEVICE_ENABLED && env.DEVICE_ENABLED.toLowerCase() === 'true')
-}
-
-const alertRabbitConfig: RabbitConsumeConfig = {
-    deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.alert-deadletter`,
-    queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.alert`,
-    failedRoutingKey: '#',
-    maxRetry: 1,
-    enabled: env.ALERT_ENABLED!.toLowerCase() === 'true'
+function buildEntityConfig(entity: string): EntityConfig {
+    return {
+        consume: {
+            deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}-deadletter`,
+            queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
+            failedRoutingKey: '#',
+            maxRetry: 1,
+            enabled: env[`${entity.toUpperCase()}_ENABLED`]!.toLowerCase() === 'true'
+        },
+        actionType: env[`${entity.toUpperCase()}_ACTION`],
+        sns: {
+            clientId: env[`SNS_${entity.toUpperCase()}_CLIENTID`]!,
+            clientSecret: env[`SNS_${entity.toUpperCase()}_CCLIENTSECRET`]!,
+            topic: env[`SNS_${entity.toUpperCase()}_TOPIC`]!
+        },
+        usesDb: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('database'),
+        usesSns: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('sns')
+    }
 }
 
 const sqlConfig: SqlConfig = {
@@ -56,26 +60,15 @@ const rabbitHostConfig: RabbitHostConfig = {
     publishTimeoutMs: 5000
 }
 
-const baseConfiguration: any = {
+const baseConfiguration = {
     environment: nodeEnv,
-    deviceConsume: deviceRabbitConfig,
-    alertConsume: alertRabbitConfig,
+    device: buildEntityConfig('device'),
+    alert: buildEntityConfig('alert'),
+    reading: buildEntityConfig('reading'),
+    notification: buildEntityConfig('notification'),
+    property: buildEntityConfig('propery'),
     rabbitHost: rabbitHostConfig,
-    deviceActionType: env.DEVICE_ACTION,
-    alertActionType: env.ALERT_ACTION,
     enableDb: false,
-    sns: {
-        device: {
-            clientId: env.SNS_DEVICE_CLIENTID,
-            clientSecret: env.SNS_DEVICE_CLIENTSECRET,
-            topic: env.SNS_DEVICE_TOPIC
-        },
-        alert: {
-            clientId: env.SNS_ALERT_CLIENTID,
-            clientSecret: env.SNS_ALERT_CLIENTSECRET,
-            topic: env.SNS_ALERT_TOPIC
-        }
-    },
     logging: {
         loglevel: env.LOG_LEVEL,
         human: env.LOGGING_HUMAN === 'true'
@@ -83,8 +76,11 @@ const baseConfiguration: any = {
     store: sqlConfig
 };
 
-baseConfiguration.enableDb = baseConfiguration.deviceActionType?.toLowerCase().includes('database')
-    || baseConfiguration.alertActionType?.toLowerCase().includes('database')
+baseConfiguration.enableDb = baseConfiguration.alert.usesDb
+    || baseConfiguration.device.usesDb
+    || baseConfiguration.notification.usesDb
+    || baseConfiguration.property.usesDb
+    || baseConfiguration.reading.usesDb;
 
 export const configuration = baseConfiguration;
 
