@@ -35,13 +35,34 @@ export abstract class SnsClient implements ISnsClient {
 @injectable()
 export class AlertSnsClient extends SnsClient {
     constructor(){
-        super(configuration.sns.alert.clientId, configuration.sns.alert.clientSecret);
+        super(configuration.alert.sns.clientId, configuration.alert.sns.clientSecret);
     }
 }
 
 @injectable()
 export class DeviceSnsClient extends SnsClient {
     constructor() {
-        super(configuration.sns.device.clientId, configuration.sns.device.clientSecret);
+        super(configuration.device.sns.clientId, configuration.device.sns.clientSecret);
+    }
+}
+
+@injectable()
+export class PropertySnsClient extends SnsClient {
+    constructor() {
+        super(configuration.property.sns.clientId, configuration.property.sns.clientSecret);
+    }
+}
+
+@injectable()
+export class NotificationSnsClient extends SnsClient {
+    constructor() {
+        super(configuration.notification.sns.clientId, configuration.notification.sns.clientSecret);
+    }
+}
+
+@injectable()
+export class ReadingSnsClient extends SnsClient {
+    constructor() {
+        super(configuration.reading.sns.clientId, configuration.reading.sns.clientSecret);
     }
 }

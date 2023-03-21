@@ -55,7 +55,7 @@ export class ConsumerBase {
 
                                 const operation = `${messageType} message-received`;
                                 Logger.count(operation, 1);
-                                Logger.info('Message Received', payload, EventCode.messageReceived, messageType);
+                                Logger.debug('Message Received', payload, EventCode.messageReceived, messageType);
 
                                 await serviceClient.create(msg, payload);
                                 channel.ack(msg);

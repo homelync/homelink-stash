@@ -17,16 +17,16 @@ export class AlertClient implements ServiceClient {
 
     async create(msg: ConsumeMessage, payload: MqttDevice) {
 
-        if (configuration.alertActionType?.toLowerCase().includes('database')){
+        if (configuration.alert.usesDb){
             Logger.debug(`Persisting to database ${configuration.store.database}`);
             await this.dbConnection.builder('homelink.alert').insert(payload);
         }
 
-        if (configuration.alertActionType?.toLowerCase().includes('sns')){
-            if (!configuration.sns.alert.topic){
+        if (configuration.alert.usesSns){
+            if (!configuration.alert.sns.topic){
                 throw new Error('Alert sns topic not configured add environment variable SNS_ALET_TOPIC');
             }
-            this.snsClient.publish(configuration.sns.alert.topic, payload);
+            this.snsClient.publish(configuration.alert.sns.topic, payload);
         }
     }
 }

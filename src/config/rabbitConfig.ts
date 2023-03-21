@@ -16,3 +16,17 @@ export interface RabbitHostConfig {
     tls?: boolean;
     publishTimeoutMs: number;
 }
+
+export interface EntityConfig {
+    consume: RabbitConsumeConfig,
+    actionType?: string
+    sns: SnsConfig;
+    usesDb: boolean;
+    usesSns: boolean;
+}
+
+export interface SnsConfig {
+    clientId: string;
+    clientSecret: string;
+    topic: string;
+}
