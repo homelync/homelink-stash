@@ -1,6 +1,8 @@
-# Homelink-Sink
+# homelink-stash
 
-Message consumer for homelink.
+You know, for stashing stuff.....think, "[Logstash](https://www.elastic.co/logstash/) for HomeLINK"
+
+
 
 ## Step 1
 Specify config your config by copying the examples template from  [./src/envTemplate](./src/envTemplate) to [./src/env](./src/env) and poplulating with your details/settings:
@@ -26,10 +28,10 @@ OR
 - Docker run command on windows (use powershell and execute from root of this repo):
 
       docker run -d -h localhost  \
-           --name homelink-sink    \
+           --name homelink-stash    \
            --restart unless-stopped	 \
            -e "NODE_ENV=local"   \
-           -v ${pwd}/src/env:/etc/homelink-sink/env \
+           -v ${pwd}/src/env:/etc/homelink-stash/env \
            homelinksink:latest
 
 ```

@@ -48,7 +48,7 @@ export class SqlDbConnection {
     }
 
     private gaurd() {
-        if (!this.knex){
+        if (!this.knex) {
             throw new Error('database is not enabled, ensure at least one output action is set to "database"');
         }
     }

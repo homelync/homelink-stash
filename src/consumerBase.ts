@@ -7,7 +7,6 @@ import uuid = require('uuid');
 import { IRabbitConnectionManager } from './service/rabbitConnectionManager';
 import { ChannelWrapper } from 'amqp-connection-manager';
 
-
 import { Logger } from './utility/logger';
 import { configuration } from './config/config';
 import { createAsyncLocalNamespace, setCorrelationId } from './utility/asyncLocalStore';
@@ -16,7 +15,7 @@ import { EventCode } from './model/eventCode';
 
 import { Timing } from './utility/timing';
 import { MessageType } from './model/messageType';
-import { RabbitConsumeConfig, RabbitHostConfig } from './config/rabbitConfig';
+import { RabbitConsumeConfig } from './config/rabbitConfig';
 
 @injectable()
 export class ConsumerBase {
@@ -56,6 +55,12 @@ export class ConsumerBase {
                                 const operation = `${messageType} message-received`;
                                 Logger.count(operation, 1);
                                 Logger.debug('Message Received', payload, EventCode.messageReceived, messageType);
+
+                                const fs = require('fs');
+
+                                var stream = fs.createWriteStream(`./logOutput/${messageType}.log`, { flags: 'a' });
+                                stream.write(JSON.stringify(payload, null, 4));
+                                stream.end();
 
                                 await serviceClient.create(msg, payload);
                                 channel.ack(msg);

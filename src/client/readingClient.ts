@@ -1,12 +1,12 @@
-import { ConsumeMessage } from "amqplib";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../global/types";
-import { SqlDbConnection } from "../forward/db/SqlDbConnection";
-import { ServiceClient } from "./serviceClient";
-import { ISnsClient } from "../forward/sns/snsClient";
-import { configuration } from "../config/config";
-import { Logger } from "../utility/logger";
-import { MqttReading } from "../model/reading";
+import { ConsumeMessage } from 'amqplib';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../global/types';
+import { SqlDbConnection } from '../forward/db/SqlDbConnection';
+import { ServiceClient } from './serviceClient';
+import { ISnsClient } from '../forward/sns/snsClient';
+import { configuration } from '../config/config';
+import { Logger } from '../utility/logger';
+import { MqttReading } from '../model/reading';
 
 @injectable()
 export class ReadingClient implements ServiceClient {
@@ -14,11 +14,11 @@ export class ReadingClient implements ServiceClient {
     constructor(@inject(TYPES.SqlDbConnection) private dbConnection: SqlDbConnection, @inject(TYPES.ReadingSnsClient) private snsClient: ISnsClient) {
     }
 
-    async create(msg: ConsumeMessage, payload: MqttReading) {
+    public async create(msg: ConsumeMessage, payload: MqttReading) {
 
         if (configuration.reading.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
-            await this.dbConnection.builder('homelink.reading').insert(payload);
+            await this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(payload);
         }
 
         if (configuration.reading.usesSns) {

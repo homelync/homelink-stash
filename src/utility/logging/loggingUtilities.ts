@@ -8,4 +8,4 @@ export function replaceErrors(key, value) {
     }
 
     return value;
-};
+}

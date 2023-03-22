@@ -18,15 +18,21 @@ export interface RabbitHostConfig {
 }
 
 export interface EntityConfig {
-    consume: RabbitConsumeConfig,
-    actionType?: string
+    consume: RabbitConsumeConfig;
+    actionType?: string;
     sns: SnsConfig;
+    hook: HookConfig;
     usesDb: boolean;
     usesSns: boolean;
+    usesHook: boolean;
 }
 
 export interface SnsConfig {
     clientId: string;
     clientSecret: string;
     topic: string;
+}
+
+export interface HookConfig {
+    url: string;
 }

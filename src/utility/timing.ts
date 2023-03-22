@@ -1,15 +1,16 @@
 
-import { EventCode } from "../model/eventCode";
-import { Logger } from "../utility/logger";
-
+import { EventCode } from '../model/eventCode';
+import { Logger } from '../utility/logger';
 
 export class Timing {
-    public startTime: Date;
-    public endTime!: Date;
-    public duration: number = 0;
+
     constructor(public metricName) {
         this.startTime = new Date();
     }
+
+    public startTime: Date;
+    public endTime!: Date;
+    public duration: number = 0;
 
     public stop(eventId?: EventCode, method?: string, context?: string) {
         this.endTime = new Date();

@@ -1,7 +1,6 @@
-import { injectable, unmanaged } from "inversify";
+import { injectable, unmanaged } from 'inversify';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
-import { configuration } from "../../config/config";
-
+import { configuration } from '../../config/config';
 
 export interface ISnsClient {
     publish(topic: string, message: any);
@@ -34,7 +33,7 @@ export abstract class SnsClient implements ISnsClient {
 
 @injectable()
 export class AlertSnsClient extends SnsClient {
-    constructor(){
+    constructor() {
         super(configuration.alert.sns.clientId, configuration.alert.sns.clientSecret);
     }
 }
