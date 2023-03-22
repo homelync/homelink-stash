@@ -5,7 +5,7 @@ import { Logger } from './utility/logger';
 import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
 import { SqlDbConnection } from './forward/db/SqlDbConnection';
-import { DeviceTable } from './forward/db/migrations/CreateDeviceTable';
+import { PropertyTable } from './forward/db/migrations/CreatePropertyTable';
 
 let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
@@ -21,7 +21,7 @@ export async function ensureSchema(): Promise<void> {
 
     Logger.info('Initialising database schema');
     const dbConnection = DependencyInjectionContainer.get<SqlDbConnection>(TYPES.SqlDbConnection);
-    const deviceTable = new DeviceTable(dbConnection);
+    const deviceTable = new PropertyTable(dbConnection);
     await deviceTable.create();
     Logger.info('Database schema initialised.');
 }
@@ -87,5 +87,5 @@ function logStartup() {
     }
     Logger.warn('Using timezone: ' + tz);
     Logger.warn('Using configuration for environment: ' + configuration.environment);
-    Logger.warn('Process Id (PID): ' + process.pid)
+    Logger.warn('Process Id (PID): ' + process.pid);
 }

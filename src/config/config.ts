@@ -1,42 +1,46 @@
 import { resolve as pathResolve } from 'path';
 import { config } from 'dotenv';
-import { EntityConfig, RabbitConsumeConfig, RabbitHostConfig } from './rabbitConfig';
+import { EntityConfig, RabbitHostConfig } from './rabbitConfig';
 import { SqlConfig, SqlDialect } from './sqlConfig';
 import { Logger } from '../utility/logger';
 
 const env = process.env;
 const nodeEnv = env.NODE_ENV || 'local';
 if (process.env.IS_DOCKER === 'true') {
-    config({ path: pathResolve(__dirname, `/etc/homelink-sink/env/.env.${nodeEnv}`) });
+    config({ path: pathResolve(__dirname, `/etc/homelink-stash/env/.env.${nodeEnv}`) });
 } else {
     config({ path: pathResolve(__dirname, `../env/.env.${nodeEnv}`) });
 }
 
 console.log(`Environment: NODE_ENV=${nodeEnv}`);
 
-let eiPrefixClients = '';
-
-export function setEiPrefixClient(clientCode: string) {
-    eiPrefixClients = clientCode;
-}
-
 function buildEntityConfig(entity: string): EntityConfig {
-    return {
-        consume: {
-            deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}-deadletter`,
-            queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
-            failedRoutingKey: '#',
-            maxRetry: 1,
-            enabled: env[`${entity.toUpperCase()}_ENABLED`]!.toLowerCase() === 'true'
-        },
-        actionType: env[`${entity.toUpperCase()}_ACTION`],
-        sns: {
-            clientId: env[`SNS_${entity.toUpperCase()}_CLIENTID`]!,
-            clientSecret: env[`SNS_${entity.toUpperCase()}_CCLIENTSECRET`]!,
-            topic: env[`SNS_${entity.toUpperCase()}_TOPIC`]!
-        },
-        usesDb: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('database'),
-        usesSns: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('sns')
+    try {
+
+        return {
+            consume: {
+                deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}-deadletter`,
+                queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
+                failedRoutingKey: '#',
+                maxRetry: 1,
+                enabled: env[`${entity.toUpperCase()}_ENABLED`]!.toLowerCase() === 'true'
+            },
+            actionType: env[`${entity.toUpperCase()}_ACTION`],
+            sns: {
+                clientId: env[`SNS_${entity.toUpperCase()}_CLIENTID`]!,
+                clientSecret: env[`SNS_${entity.toUpperCase()}_CCLIENTSECRET`]!,
+                topic: env[`SNS_${entity.toUpperCase()}_TOPIC`]!
+            },
+            hook: {
+                url: env[`HOOK_${entity.toUpperCase()}_URL`]!,
+            },
+            usesDb: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('database'),
+            usesSns: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('sns'),
+            usesHook: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('hook')
+        };
+    } catch (err) {
+        Logger.error(`Error processing config for ${entity}`, err);
+        throw err;
     }
 }
 
@@ -46,7 +50,7 @@ const sqlConfig: SqlConfig = {
     database: env.SQL_DATABASE!,
     user: env.SQL_USERNAME!,
     password: env.SQL_PASSWORD!,
-    port: parseInt(env.SQL_PORT!),
+    port: parseInt(env.SQL_PORT!, 10),
     timezone: env.SQL_TIMEZONE || '+00:00'
 };
 
@@ -58,7 +62,7 @@ const rabbitHostConfig: RabbitHostConfig = {
     username: env.RABBIT_USERNAME,
     password: env.RABBIT_PASSWORD,
     publishTimeoutMs: 5000
-}
+};
 
 const baseConfiguration = {
     environment: nodeEnv,
@@ -66,7 +70,7 @@ const baseConfiguration = {
     alert: buildEntityConfig('alert'),
     reading: buildEntityConfig('reading'),
     notification: buildEntityConfig('notification'),
-    property: buildEntityConfig('propery'),
+    property: buildEntityConfig('property'),
     rabbitHost: rabbitHostConfig,
     enableDb: false,
     logging: {

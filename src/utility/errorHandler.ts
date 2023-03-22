@@ -6,7 +6,12 @@ import { MessageType } from 'aws-sdk/clients/configservice';
 import { EventCode } from '../model/eventCode';
 
 export async function handleError(errMsg: string, exp: Error, config: RabbitConsumeConfig, msg: ConsumeMessage, channel: Channel, messageType: MessageType) {
+    Logger.warn(`Rejecting - ${messageType} message`, exp.message || exp, EventCode.retryingMessage, messageType);
+    channel.reject(msg, false);
 
+}
+
+export async function handleWithRetries(errMsg: string, exp: Error, config: RabbitConsumeConfig, msg: ConsumeMessage, channel: Channel, messageType: MessageType) {
     Logger.error(errMsg, exp);
     Logger.debug('Handling error');
     const exchangeDeathCount = getXDeathCount(msg, config);
@@ -19,7 +24,7 @@ export async function handleError(errMsg: string, exp: Error, config: RabbitCons
         const correlationId = getCorrelationId();
         let rejectReason = exp.message;
         try {
-            if (rejectReason && rejectReason.length > 1000){
+            if (rejectReason && rejectReason.length > 1000) {
                 rejectReason = rejectReason.substring(0, 1000);
             }
 
@@ -38,10 +43,10 @@ export async function handleError(errMsg: string, exp: Error, config: RabbitCons
     }
 }
 
-export function shouldRetry(msg: ConsumeMessage, config: RabbitConsumeConfig, exchangeDeathCount: number): boolean {
 
+export function shouldRetry(msg: ConsumeMessage, config: RabbitConsumeConfig, exchangeDeathCount: number): boolean {
     Logger.debug(`Exchange death: ${exchangeDeathCount}. Max retry ${config.maxRetry}`);
-    return exchangeDeathCount < (config.maxRetry || 0)
+    return exchangeDeathCount < (config.maxRetry || 0);
 }
 
 export function getXDeathCount(msg: ConsumeMessage, config: RabbitConsumeConfig): number {

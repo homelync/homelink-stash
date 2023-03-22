@@ -1,7 +1,7 @@
-import { inject } from "inversify";
-import { TYPES } from "../../global/types";
-import { Logger } from "../../utility/logger";
-import { SqlDbConnection } from "../db/SqlDbConnection";
+import { inject } from 'inversify';
+import { TYPES } from '../../global/types';
+import { Logger } from '../../utility/logger';
+import { SqlDbConnection } from '../db/SqlDbConnection';
 
 export class DeviceTable {
     constructor(@inject(TYPES.SqlDbConnection) private dbConnection: SqlDbConnection) {
@@ -46,4 +46,3 @@ export class DeviceTable {
         await this.dbConnection.knexRaw().raw(sql);
     }
 }
-

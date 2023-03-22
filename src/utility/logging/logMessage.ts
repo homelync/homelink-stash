@@ -19,13 +19,13 @@ export class LogMessage {
         correlationId?: string) {
 
         this.createdDate = new Date().toISOString();
-        this.environment = configuration.environment;
+        this.environment = configuration?.environment;
         this.machineName = os.hostname();
         this.correlationId = correlationId || getCorrelationId();
         this.taskId = getTaskId();
     }
 
-    public createdDate: string
+    public createdDate: string;
     public environment: string;
     public component = 'reading-consumer';
     public machineName: string;
@@ -34,10 +34,10 @@ export class LogMessage {
 
     public toLogString() {
 
-        if (configuration.logging.human) {
-            const formattedData = this.level === 'metric' ? `${this.responseTimeMs}${this.method === 'timing' ? 'ms' : ''}` : JSON.stringify(this.data, replaceErrors, 4)
-            if (formattedData && formattedData !== 'null') {
-                return `${this.tag} ${this.message} ${formattedData}`;
+        if (configuration?.logging?.human) {
+            const humanFormattedData = this.level === 'metric' ? `${this.responseTimeMs}${this.method === 'timing' ? 'ms' : ''}` : JSON.stringify(this.data, replaceErrors, 4);
+            if (humanFormattedData && humanFormattedData !== 'null') {
+                return `${this.tag} ${this.message} ${humanFormattedData}`;
             }
             return `${this.tag} ${this.message}`;
         }

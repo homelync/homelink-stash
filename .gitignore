@@ -8,6 +8,8 @@
 
 /src/env/*
 
+/logOutput
+
 # dependencies
 /node_modules
 

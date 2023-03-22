@@ -10,12 +10,12 @@ x-homelinksink-defaults: &homelinksink-defaults
       hard: 262144
 
 services:
-  homelink-sink:
+  homelink-stash:
     <<: *homelinksink-defaults
-    container_name: homelink-sink
+    container_name: homelink-stash
     ports:
       - 1433:1433
     volumes:
-      - "./src/env:/etc/homelink-sink/env"
+      - "./src/env:/etc/homelink-stash/env"
     environment:
       - NODE_ENV=test

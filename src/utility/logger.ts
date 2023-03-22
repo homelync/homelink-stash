@@ -1,11 +1,7 @@
 
 import * as logger from 'winston';
-import WinstonCloudWatch from 'winston-cloudwatch';
-
-import uuid = require('uuid');
 import { configuration } from '../config/config';
 import { LogMessage } from './logging/logMessage';
-
 
 import { camelToHuman, titleCase } from './stringUtils';
 import { EventCode } from '../model/eventCode';
@@ -60,10 +56,9 @@ if (enableConsoleLogger) {
     }));
 }
 
-
 const consoleFormat = printf(info => {
 
-    if (configuration.environment === 'local') {
+    if (configuration?.environment === 'local') {
         switch (info.level) {
             case 'warn': return colors.yellow(format(info));
             case 'error': return colors.red(format(info));
@@ -75,9 +70,9 @@ const consoleFormat = printf(info => {
     }
 });
 
-
 logger.configure({
-    level: configuration.logging.loglevel,
+    // Probably an issue with config, so log everthing as it's likely a startup error
+    level: configuration?.logging?.loglevel || 'debug',
     format: logger.format.combine(
         timestamp(),
         consoleFormat

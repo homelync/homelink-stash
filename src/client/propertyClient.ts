@@ -1,12 +1,14 @@
-import { ConsumeMessage } from "amqplib";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../global/types";
-import { SqlDbConnection } from "../forward/db/SqlDbConnection";
-import { ServiceClient } from "./serviceClient";
-import { ISnsClient } from "../forward/sns/snsClient";
-import { configuration } from "../config/config";
-import { Logger } from "../utility/logger";
-import { MqttProperty } from "../model/reading";
+import { ConsumeMessage } from 'amqplib';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../global/types';
+import { SqlDbConnection } from '../forward/db/SqlDbConnection';
+import { ServiceClient } from './serviceClient';
+import { ISnsClient } from '../forward/sns/snsClient';
+import { configuration } from '../config/config';
+import { Logger } from '../utility/logger';
+import { ExternalPropertyPayload } from '../model/package/messaging/external/payloads/property';
+import { convertDateToSqlString } from '../utility/date-utils';
+import fetch from 'node-fetch';
 
 @injectable()
 export class PropertyClient implements ServiceClient {
@@ -14,11 +16,18 @@ export class PropertyClient implements ServiceClient {
     constructor(@inject(TYPES.SqlDbConnection) private dbConnection: SqlDbConnection, @inject(TYPES.PropertySnsClient) private snsClient: ISnsClient) {
     }
 
-    async create(msg: ConsumeMessage, payload: MqttProperty) {
+    public async create(msg: ConsumeMessage, payload: ExternalPropertyPayload) {
 
         if (configuration.property.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
-            await this.dbConnection.builder('homelink.property').insert(payload);
+
+            const record = {
+                ...payload
+            };
+
+            record.actionTimestamp = convertDateToSqlString(new Date(record.actionTimestamp));
+
+            await this.dbConnection.builder(`${configuration.store.database}.propertyMessage`).insert(record);
         }
 
         if (configuration.property.usesSns) {
@@ -26,6 +35,22 @@ export class PropertyClient implements ServiceClient {
                 throw new Error('Property sns topic not configured add environment variable SNS_PROPERTY_TOPIC');
             }
             this.snsClient.publish(configuration.property.sns.topic, payload);
+        }
+
+        if (configuration.property.usesHook) {
+            if (!configuration.property.hook.url) {
+                throw new Error('Property hook url not configured add environment variable PROPERTY_HOOK_URL');
+            }
+
+            const response = await fetch(configuration.property.hook.url, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.status !== 200) {
+                throw new Error(`Property hook failed with status code ${response.status}`);
+            }
         }
     }
 }
