@@ -13,7 +13,7 @@ export class RabbitConnectionManager implements IRabbitConnectionManager {
     constructor(public connection: AmqpConnectionManager, url: string) {
         connection.on('connect', () => Logger.debug(`Connected to rabbitMq @ ${url}`, undefined, EventCode.rabbitConnect));
         connection.on('disconnect', () => Logger.warn(`Disconnected from rabbitMq @ ${url}`, undefined, EventCode.rabbitUnblocked));
-        connection.on('connectFailed', () => Logger.error(`Disconnected from rabbitMq @ ${url}`, {}, EventCode.rabbitConnectFailed));
+        connection.on('connectFailed', () => Logger.error(`Connection to rabbitMq failed @ ${url}`, {}, EventCode.rabbitConnectFailed));
         connection.on('unblocked', () => Logger.info(`Unblocked rabbitMq @ ${url}`, undefined, EventCode.rabbitUnblocked));
         connection.on('blocked', () => Logger.error(`Blocked rabbitMq @ ${url}`, {}, EventCode.rabbitBlocked));
     }

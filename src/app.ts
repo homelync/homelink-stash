@@ -6,6 +6,7 @@ import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
 import { SqlDbConnection } from './forward/db/SqlDbConnection';
 import { PropertyTable } from './forward/db/migrations/CreatePropertyTable';
+import { ReadingTable } from './forward/db/migrations/CreateReadingTable';
 
 let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
@@ -22,7 +23,9 @@ export async function ensureSchema(): Promise<void> {
     Logger.info('Initialising database schema');
     const dbConnection = DependencyInjectionContainer.get<SqlDbConnection>(TYPES.SqlDbConnection);
     const deviceTable = new PropertyTable(dbConnection);
+    const readingTable = new ReadingTable(dbConnection);
     await deviceTable.create();
+    await readingTable.create();
     Logger.info('Database schema initialised.');
 }
 
