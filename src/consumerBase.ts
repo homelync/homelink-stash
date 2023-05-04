@@ -28,7 +28,7 @@ export class ConsumerBase {
         @unmanaged() messageType: MessageType
     ) {
 
-        Logger.debug(`Creating channel for ${configuration.rabbitHost.host}/${configuration.rabbitHost.vhost}/${rabbitConsumeConfig.queue}`);
+        Logger.debug(`Creating channel for ${configuration.rabbitHost.host}/${configuration.rabbitHost.vhost?.toLowerCase()}/${rabbitConsumeConfig.queue}`);
         this.channel = connectionManager.connection.createChannel({
             publishTimeout: configuration.rabbitHost.publishTimeoutMs,
             setup: function (channel: Channel) {

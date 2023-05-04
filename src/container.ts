@@ -27,9 +27,10 @@ const rabbitUrl = configuration.rabbitHost.port
     ? `${configuration.rabbitHost.host}:${configuration.rabbitHost.port}`
     : configuration.rabbitHost.host;
 
-    const protocol = configuration.rabbitHost.tls ? 'amqps://' : 'amqp://';
-
-const amqpConnectionManager = amqpConnect([`${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${configuration.rabbitHost.vhost}`]);
+const protocol = configuration.rabbitHost.tls ? 'amqps://' : 'amqp://';
+const connectionString = `${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${configuration.rabbitHost.vhost?.toLowerCase()}`
+console.log(`Connecting to RabbitMQ at ${connectionString}`);
+const amqpConnectionManager = amqpConnect([connectionString]);
 const rabbitConnectionManager = new RabbitConnectionManager(amqpConnectionManager, rabbitUrl!);
 
 DependencyInjectionContainer.bind<SqlDbConnection>(TYPES.SqlDbConnection).to(SqlDbConnection);
