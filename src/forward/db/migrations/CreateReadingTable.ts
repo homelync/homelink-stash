@@ -11,13 +11,14 @@ export class ReadingTable {
 
         const sql = `
                 CREATE TABLE IF NOT EXISTS readingMessage (
-                    __IDENTITY char(36) NOT NULL,
+                    __IDENTITY varchar(255) NOT NULL,
                     action varchar(10) NOT NULL,
                     actionTimestamp datetime(3) NOT NULL,
                     collectionDate datetime(3) NOT NULL,
                     deviceId char(36) NOT NULL,
                     devicePhySerialNumber varchar(255) NOT NULL,
                     deviceSerialNumber varchar(255) NOT NULL,
+                    landlordReference varchar(255) NOT NULL,
                     location varchar(255) NOT NULL,
                     locationNickname varchar(255) DEFAULT NULL,
                     manufacturerReference varchar(255) NOT NULL,
@@ -25,7 +26,7 @@ export class ReadingTable {
                     propertyId char(36) NOT NULL,
                     propertyReference varchar(255) NOT NULL,
                     readingDate datetime(3) NOT NULL,
-                    readingTypeId varchar(255) NOT NULL,
+                    readingTypeId varchar(100) NOT NULL,
                     room varchar(255) NOT NULL,
                     sourceModel varchar(255) NOT NULL,
                     sourceModelType varchar(255) NOT NULL,

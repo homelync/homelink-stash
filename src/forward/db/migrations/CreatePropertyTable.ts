@@ -11,7 +11,7 @@ export class PropertyTable {
 
         const sql = `
                 CREATE TABLE IF NOT EXISTS propertyMessage (
-                    __IDENTITY char(36) NOT NULL,
+                    __IDENTITY char(255) NOT NULL,
                     action varchar(10) NOT NULL,
                     actionTimestamp datetime(3) NOT NULL,
                     address1 varchar(255) NOT NULL,
