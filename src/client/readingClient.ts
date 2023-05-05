@@ -24,7 +24,9 @@ export class ReadingClient implements ServiceClient {
             };
 
             record.actionTimestamp = convertDateToSqlString(new Date(record.actionTimestamp));
-            await this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(payload);
+            record.collectionDate = convertDateToSqlString(new Date(record.collectionDate));
+            record.readingDate = convertDateToSqlString(new Date(record.readingDate));
+            await this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(record);
         }
 
         if (configuration.reading.usesSns) {
