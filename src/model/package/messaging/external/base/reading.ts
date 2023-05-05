@@ -1,7 +1,12 @@
 import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsUUID, IsISO8601 } from 'class-validator';
+import { ReadingOperationAction } from '../enums/action';
 
 export abstract class AbstractReadingBase {
+    /** {@inheritDoc MetaIdentityContract.__IDENTITY} */
+    @Expose()
+    @IsNotEmpty()
+    public __IDENTITY!: string;
 
     /**
     * The date/time when a reading was collected/received.
@@ -12,6 +17,16 @@ export abstract class AbstractReadingBase {
     @IsISO8601()
     @IsNotEmpty()
     public collectionDate!: string;
+
+    /** {@inheritDoc MetaActionContract.action} */
+    @Expose()
+    @IsNotEmpty()
+    public action!: ReadingOperationAction;
+
+    /** {@inheritDoc MetaActionContract.actionTimestamp} */
+    @Expose()
+    @IsNotEmpty()
+    public actionTimestamp!: string;
 
     /** {@inheritDoc DeviceFields.deviceId} */
     @Expose()
