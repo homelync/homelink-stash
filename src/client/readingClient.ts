@@ -20,7 +20,8 @@ export class ReadingClient implements ServiceClient {
         if (configuration.reading.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
             const record = prepareForInsert(payload);
-            await this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(record);
+            const sql = this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(record).toString();
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`)
         }
 
         if (configuration.reading.usesSns) {

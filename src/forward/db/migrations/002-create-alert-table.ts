@@ -54,11 +54,11 @@ module.exports = {
             },
             deviceSerialNumber: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: true
             },
             devicePhySerialNumber: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: true
             },
             deviceId: {
                 type: DataTypes.UUID,
@@ -121,6 +121,10 @@ module.exports = {
                 allowNull: false
             },
             room: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            severity: {
                 type: DataTypes.STRING,
                 allowNull: false
             },

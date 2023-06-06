@@ -83,7 +83,6 @@ function logStartup() {
     if (tz !== 'UTC') {
         throw Error(`Server must run as TZ = UTC but was ${tz}, check your TZ environment variable`);
     }
-    Logger.warn('Using timezone: ' + tz);
-    Logger.warn('Using configuration for environment: ' + configuration.environment);
-    Logger.warn('Process Id (PID): ' + process.pid);
+    Logger.info('Using timezone: ' + tz);
+    Logger.info('Using configuration for environment: ' + configuration.environment);
 }

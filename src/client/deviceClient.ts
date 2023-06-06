@@ -7,6 +7,7 @@ import { ServiceClient } from './serviceClient';
 import { ISnsClient } from '../forward/sns/snsClient';
 import { configuration } from '../config/config';
 import { Logger } from '../utility/logger';
+import { prepareForInsert } from '../utility/message-utils';
 
 @injectable()
 export class DeviceClient implements ServiceClient {
@@ -18,7 +19,9 @@ export class DeviceClient implements ServiceClient {
 
         if (configuration.device.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
-            await this.dbConnection.builder(`${configuration.store.database}.deviceMessage`).insert(payload);
+            const record = prepareForInsert(payload);
+            const sql = this.dbConnection.builder(`${configuration.store.database}.deviceMessage`).insert(record).toString();
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`)
         }
 
         if (configuration.device.usesSns) {

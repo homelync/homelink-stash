@@ -30,6 +30,26 @@ module.exports = {
                 type: DataTypes.STRING,
                 allowNull: false
             },
+            recipientEmail: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            recipientSmsNumber: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            recipientUsername: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            recipientLandlordPersonReference: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            channel: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
             notificationDate: {
                 type: DataTypes.STRING,
                 allowNull: false

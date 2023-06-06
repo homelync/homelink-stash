@@ -2,7 +2,6 @@ import { resolve as pathResolve } from 'path';
 import { config } from 'dotenv';
 import { EntityConfig, RabbitHostConfig } from './rabbitConfig';
 import { SqlConfig, SqlDialect } from './sqlConfig';
-import { Logger } from '../utility/logger';
 
 const env = process.env;
 const nodeEnv = env.NODE_ENV || 'local';
@@ -11,8 +10,6 @@ if (process.env.IS_DOCKER === 'true') {
 } else {
     config({ path: pathResolve(__dirname, `../env/.env.${nodeEnv}`) });
 }
-
-console.log(`Environment: NODE_ENV=${nodeEnv}`);
 
 function buildEntityConfig(entity: string): EntityConfig {
     try {
@@ -23,6 +20,7 @@ function buildEntityConfig(entity: string): EntityConfig {
                 queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
                 failedRoutingKey: '#',
                 maxRetry: 1,
+                prefetch: 100,
                 enabled: env[`${entity.toUpperCase()}_ENABLED`]!.toLowerCase() === 'true'
             },
             actionType: env[`${entity.toUpperCase()}_ACTION`],
@@ -39,7 +37,7 @@ function buildEntityConfig(entity: string): EntityConfig {
             usesHook: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('hook')
         };
     } catch (err) {
-        Logger.error(`Error processing config for ${entity}`, err);
+        console.error(`Error processing config for ${entity}`, err);
         throw err;
     }
 }
@@ -88,4 +86,6 @@ baseConfiguration.enableDb = baseConfiguration.alert.usesDb
 
 export const configuration = baseConfiguration;
 
-console.log(JSON.stringify(configuration, null, 4));
+export async function loadConfig() {
+    // Dummy method to load this module as part of the promise chain startup.
+}

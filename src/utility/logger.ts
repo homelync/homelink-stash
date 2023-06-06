@@ -79,18 +79,17 @@ logger.configure({
     ),
     transports: transports,
     levels: {
-        metric: 0,
-        error: 1,
-        warn: 2,
+        error: 0,
+        warn: 1,
+        metric: 2,
         info: 3,
         http: 4,
         verbose: 5,
-        debug: 6,
-        silly: 7
+        debug: 6
     }
 });
 
-export type Level = 'metric' | 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
+export type Level =  'error' | 'warn' | 'metric' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
 
 export const stream = {
     write: function (message, encoding) {

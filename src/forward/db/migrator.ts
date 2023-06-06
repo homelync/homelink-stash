@@ -1,6 +1,5 @@
 import { Sequelize, Options } from 'sequelize';
 import { configuration } from '../../config/config';
-import fs from 'fs';
 import path from 'path';
 import { Logger } from '../../utility/logger';
 import { EntityConfig } from '../../config/rabbitConfig';
@@ -11,6 +10,7 @@ const sequelizeOptions: Options = {
     port: configuration.store.port,
     username: configuration.store.user,
     password: configuration.store.password,
+    logging: configuration.logging.loglevel === 'debug'
 };
 
 const messageTypeMappings = {
@@ -55,7 +55,7 @@ export async function runMigrations() {
                     continue;
                 }
 
-                console.log(`Running migration from file ${migrationFile}`);
+                Logger.debug(`Running migration from file ${migrationFile}`);
                 await migration.up(queryInterface, Sequelize);
             }
         }
@@ -64,9 +64,9 @@ export async function runMigrations() {
     try {
         await ensureDatabase();
         await migrate();
-        console.log('All migrations successfully executed');
+        Logger.info('All migrations successfully executed');
     } catch (err) {
-        console.error('Error executing migrations: ', err);
+        Logger.error('Error executing migrations: ', err);
         process.exit(256);
     }
 };

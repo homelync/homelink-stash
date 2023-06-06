@@ -1,8 +1,19 @@
-export function prepareForInsert(message: any): object {
-    const dateColumns = ['readingDate', 'collectionDate', 'actionTimestamp'];
+export function prepareForInsert<T>(message: T): T {
+    const dateColumns = [
+        'readingDate',
+        'collectionDate',
+        'actionTimestamp',
+        'raisedDate',
+        'resolvedDate',
+        'notificationDate',
+        'replaceByDate',
+        'uninstallationDate',
+        'installationDate'
+    ];
+
     const record = { ...message };
     for (const p of Object.getOwnPropertyNames(message)) {
-        if (!dateColumns.includes(p)) {
+        if (!dateColumns.includes(p) || !message[p]) {
             continue;
         }
 

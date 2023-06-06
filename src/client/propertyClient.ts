@@ -7,8 +7,8 @@ import { ISnsClient } from '../forward/sns/snsClient';
 import { configuration } from '../config/config';
 import { Logger } from '../utility/logger';
 import { ExternalPropertyPayload } from '../model/package/messaging/external/payloads/property';
-import { convertDateToSqlString } from '../utility/date-utils';
 import fetch from 'node-fetch';
+import { prepareForInsert } from '../utility/message-utils';
 
 @injectable()
 export class PropertyClient implements ServiceClient {
@@ -20,14 +20,9 @@ export class PropertyClient implements ServiceClient {
 
         if (configuration.property.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
-
-            const record = {
-                ...payload
-            };
-
-            record.actionTimestamp = convertDateToSqlString(new Date(record.actionTimestamp));
-
-            await this.dbConnection.builder(`${configuration.store.database}.propertyMessage`).insert(record);
+            const record = prepareForInsert(payload);
+            const sql = this.dbConnection.builder(`${configuration.store.database}.propertyMessage`).insert(record).toString();
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`)
         }
 
         if (configuration.property.usesSns) {
