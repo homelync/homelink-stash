@@ -2,7 +2,7 @@ import { ConsumeMessage } from 'amqplib';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../global/types';
 import { MqttDevice } from '../model/device';
-import { SqlDbConnection } from '../forward/db/SqlDbConnection';
+import { SqlDbConnection } from '../forward/db/sqlDbConnection';
 import { ServiceClient } from './serviceClient';
 import { ISnsClient } from '../forward/sns/snsClient';
 import { configuration } from '../config/config';

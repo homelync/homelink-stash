@@ -1,7 +1,7 @@
 import { inject } from 'inversify';
 import { TYPES } from '../../global/types';
 import { Logger } from '../../utility/logger';
-import { SqlDbConnection } from '../db/SqlDbConnection';
+import { SqlDbConnection } from '../db/sqlDbConnection';
 
 export class DeviceTable {
     constructor(@inject(TYPES.SqlDbConnection) private dbConnection: SqlDbConnection) {

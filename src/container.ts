@@ -9,7 +9,7 @@ import { ServiceClient } from './client/serviceClient';
 import { DeviceClient } from './client/deviceClient';
 import { DeviceConsumer } from './deviceConsumer';
 import { ConsumerBase } from './consumerBase';
-import { SqlDbConnection } from './forward/db/SqlDbConnection';
+import { SqlDbConnection } from './forward/db/sqlDbConnection';
 import { AlertClient } from './client/alertClient';
 import { AlertConsumer } from './alertConsumer';
 import { AlertSnsClient, DeviceSnsClient, ISnsClient, NotificationSnsClient, PropertySnsClient, ReadingSnsClient } from './forward/sns/snsClient';

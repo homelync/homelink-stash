@@ -19,7 +19,7 @@ function buildEntityConfig(entity: string): EntityConfig {
 
         return {
             consume: {
-                deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}-deadletter`,
+                deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}.deadletter`,
                 queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
                 failedRoutingKey: '#',
                 maxRetry: 1,
