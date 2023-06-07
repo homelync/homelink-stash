@@ -21,7 +21,7 @@ export class DeviceClient implements ServiceClient {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
             const record = prepareForInsert(payload);
             const sql = this.dbConnection.builder(`${configuration.store.database}.deviceMessage`).insert(record).toString();
-            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`)
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`);
         }
 
         if (configuration.device.usesSns) {

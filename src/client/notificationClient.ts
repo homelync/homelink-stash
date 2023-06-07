@@ -6,7 +6,6 @@ import { ServiceClient } from './serviceClient';
 import { ISnsClient } from '../forward/sns/snsClient';
 import { configuration } from '../config/config';
 import { Logger } from '../utility/logger';
-import { MqttNotification } from '../model/reading';
 import { prepareForInsert } from '../utility/message-utils';
 import { ExternalNotificationPayload } from '../model/package/messaging/external/payloads/notification';
 
@@ -25,8 +24,8 @@ export class NotificationClient implements ServiceClient {
                 for (const a of record.alerts) {
                     const alertRecord = prepareForInsert(a);
                     alertRecord.notificationId = record.notificationId;
-                    const sql = this.dbConnection.builder(`${configuration.store.database}.notificationAlertMessage`).insert(alertRecord).toString();
-                    await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`, trx);
+                    const alertSql = this.dbConnection.builder(`${configuration.store.database}.notificationAlertMessage`).insert(alertRecord).toString();
+                    await this.dbConnection.executeRaw(`${alertSql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`, trx);
                 }
                 delete (record as any).alerts;
                 const sql = this.dbConnection.builder(`${configuration.store.database}.notificationMessage`).insert(record).toString();

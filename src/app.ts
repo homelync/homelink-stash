@@ -4,7 +4,6 @@ import { configuration } from './config/config';
 import { Logger } from './utility/logger';
 import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
-import { SqlDbConnection } from './forward/db/sqlDbConnection';
 import { runMigrations } from './forward/db/migrator';
 
 let deviceConsumer: ConsumerBase;

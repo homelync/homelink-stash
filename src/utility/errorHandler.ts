@@ -47,21 +47,21 @@ export function getXDeathCount(msg: ConsumeMessage, config: RabbitConsumeConfig)
     return exchangeDeathCount;
 }
 
-async function requeue(rejectReason: string, channel: Channel, exchange: string, correlationId: string, msg: ConsumeMessage){
+async function requeue(rejectReason: string, channel: Channel, exchange: string, correlationId: string, msg: ConsumeMessage) {
 
-        try {
-            await channel.publish(exchange, msg.fields.routingKey, msg.content, {
-                persistent: true,
-                headers: { 'x-reject-reason': rejectReason, correlationId: correlationId }
-            });
-        } catch (err: any) {
-            Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
-            await channel.publish(exchange, msg.fields.routingKey, msg.content, {
-                persistent: true,
-                headers: { correlationId: correlationId }
-            });
-        }
-        channel.ack(msg);
+    try {
+        await channel.publish(exchange, msg.fields.routingKey, msg.content, {
+            persistent: true,
+            headers: { 'x-reject-reason': rejectReason, correlationId: correlationId }
+        });
+    } catch (err: any) {
+        Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
+        await channel.publish(exchange, msg.fields.routingKey, msg.content, {
+            persistent: true,
+            headers: { correlationId: correlationId }
+        });
+    }
+    channel.ack(msg);
 }
 
 function getRejectReason(exp: Error, config: RabbitConsumeConfig): string {

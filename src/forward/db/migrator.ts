@@ -19,7 +19,7 @@ const messageTypeMappings = {
     reading: ['003-create-reading-table.ts'],
     notification: ['004-create-notification-table.ts', '005-create-notification-alert-table.ts'],
     device: ['006-create-device-table.ts']
-}
+};
 
 export async function runMigrations() {
 
@@ -30,7 +30,7 @@ export async function runMigrations() {
         await sequelize.query(`CREATE DATABASE IF NOT EXISTS ${databaseName}`);
         await sequelize.query(`USE ${databaseName}`);
         Logger.info('Ensuring database');
-    }
+    };
 
     const migrate = async () => {
         const migrationOptions = { ...sequelizeOptions };
@@ -59,7 +59,7 @@ export async function runMigrations() {
                 await migration.up(queryInterface, Sequelize);
             }
         }
-    }
+    };
 
     try {
         await ensureDatabase();
@@ -69,4 +69,4 @@ export async function runMigrations() {
         Logger.error('Error executing migrations: ', err);
         process.exit(256);
     }
-};
+}

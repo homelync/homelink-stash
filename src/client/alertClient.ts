@@ -1,7 +1,6 @@
 import { ConsumeMessage } from 'amqplib';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../global/types';
-import { MqttDevice } from '../model/device';
 import { SqlDbConnection } from '../forward/db/sqlDbConnection';
 import { ServiceClient } from './serviceClient';
 import { ISnsClient } from '../forward/sns/snsClient';
@@ -23,7 +22,7 @@ export class AlertClient implements ServiceClient {
             const record = prepareForInsert(payload);
 
             const sql = this.dbConnection.builder(`${configuration.store.database}.alertMessage`).insert(record).toString();
-            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`)
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`);
         }
 
         if (configuration.alert.usesSns) {
