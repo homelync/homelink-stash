@@ -1,12 +1,13 @@
 import { ConsumeMessage } from 'amqplib';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../global/types';
-import { SqlDbConnection } from '../forward/db/SqlDbConnection';
+import { SqlDbConnection } from '../forward/db/sqlDbConnection';
 import { ServiceClient } from './serviceClient';
 import { ISnsClient } from '../forward/sns/snsClient';
 import { configuration } from '../config/config';
 import { Logger } from '../utility/logger';
 import { MqttReading } from '../model/reading';
+import { prepareForInsert } from '../utility/message-utils';
 
 @injectable()
 export class ReadingClient implements ServiceClient {
@@ -18,7 +19,9 @@ export class ReadingClient implements ServiceClient {
 
         if (configuration.reading.usesDb) {
             Logger.debug(`Persisting to database ${configuration.store.database}`);
-            await this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(payload);
+            const record = prepareForInsert(payload);
+            const sql = this.dbConnection.builder(`${configuration.store.database}.readingMessage`).insert(record).toString();
+            await this.dbConnection.executeRaw(`${sql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`);
         }
 
         if (configuration.reading.usesSns) {

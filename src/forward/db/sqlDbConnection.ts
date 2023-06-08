@@ -42,6 +42,16 @@ export class SqlDbConnection {
         return this.knex.table(tableName);
     }
 
+    public async executeRaw(query: string,  trx?: Knex.Transaction): Promise<any> {
+        const builder = this.knex.raw(query);
+
+        if (trx) {
+            (builder as any).transacting(trx);
+        }
+
+        return await builder;
+    }
+
     public knexRaw(): Knex {
         this.gaurd();
         return this.knex;

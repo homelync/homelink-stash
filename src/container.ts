@@ -9,7 +9,7 @@ import { ServiceClient } from './client/serviceClient';
 import { DeviceClient } from './client/deviceClient';
 import { DeviceConsumer } from './deviceConsumer';
 import { ConsumerBase } from './consumerBase';
-import { SqlDbConnection } from './forward/db/SqlDbConnection';
+import { SqlDbConnection } from './forward/db/sqlDbConnection';
 import { AlertClient } from './client/alertClient';
 import { AlertConsumer } from './alertConsumer';
 import { AlertSnsClient, DeviceSnsClient, ISnsClient, NotificationSnsClient, PropertySnsClient, ReadingSnsClient } from './forward/sns/snsClient';
@@ -28,8 +28,7 @@ const rabbitUrl = configuration.rabbitHost.port
     : configuration.rabbitHost.host;
 
 const protocol = configuration.rabbitHost.tls ? 'amqps://' : 'amqp://';
-const connectionString = `${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${configuration.rabbitHost.vhost?.toLowerCase()}`
-console.log(`Connecting to RabbitMQ at ${connectionString}`);
+const connectionString = `${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${configuration.rabbitHost.vhost?.toLowerCase()}`;
 const amqpConnectionManager = amqpConnect([connectionString]);
 const rabbitConnectionManager = new RabbitConnectionManager(amqpConnectionManager, rabbitUrl!);
 

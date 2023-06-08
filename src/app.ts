@@ -4,8 +4,7 @@ import { configuration } from './config/config';
 import { Logger } from './utility/logger';
 import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
-import { SqlDbConnection } from './forward/db/SqlDbConnection';
-import { PropertyTable } from './forward/db/migrations/CreatePropertyTable';
+import { runMigrations } from './forward/db/migrator';
 
 let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
@@ -20,9 +19,7 @@ export async function ensureSchema(): Promise<void> {
     }
 
     Logger.info('Initialising database schema');
-    const dbConnection = DependencyInjectionContainer.get<SqlDbConnection>(TYPES.SqlDbConnection);
-    const deviceTable = new PropertyTable(dbConnection);
-    await deviceTable.create();
+    await runMigrations();
     Logger.info('Database schema initialised.');
 }
 
@@ -85,7 +82,6 @@ function logStartup() {
     if (tz !== 'UTC') {
         throw Error(`Server must run as TZ = UTC but was ${tz}, check your TZ environment variable`);
     }
-    Logger.warn('Using timezone: ' + tz);
-    Logger.warn('Using configuration for environment: ' + configuration.environment);
-    Logger.warn('Process Id (PID): ' + process.pid);
+    Logger.info('Using timezone: ' + tz);
+    Logger.info('Using configuration for environment: ' + configuration.environment);
 }
