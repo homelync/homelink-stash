@@ -6,7 +6,9 @@
 /tmp
 /out-tsc
 
+# sensitive files
 /src/env/*
+settings.json
 
 /logOutput
 
@@ -24,9 +26,7 @@
 
 # IDE - VSCode
 .vscode/*
-!.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
 
 # misc

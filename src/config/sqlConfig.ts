@@ -1,5 +1,4 @@
-export type SqlDialect = 'mysql' | 'mssql';
-
+import { SqlDialect } from './settings';
 export interface SqlConfig {
     dialect: SqlDialect;
     host: string;

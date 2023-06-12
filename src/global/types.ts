@@ -1,6 +1,7 @@
 export const TYPES = {
     SqlDbConnection: Symbol('SqlDbConnection'),
     RabbitConnectionManager: Symbol('RabbitConnectionManager'),
+    ActionExecutor: Symbol('ActionExecutor'),
 
     // Device
     DeviceRabbitConfig: Symbol('DeviceRabbitConfig'),

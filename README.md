@@ -13,57 +13,29 @@ Specify config your config by copying the examples template from  [./src/envTemp
 
 ## Build and Run Container
 
-- $ `npm run docker:build`
-- $ `docker-compose -f docker-compose-local.yml`
-
-OR
-- $ `docker-compose -f docker-compose-test.yml`
-
-OR
-- $ `docker-compose -f docker-compose-production.yml`
-
-###
+### Linux
 
 ```
-- Docker run command on windows (use powershell and execute from root of this repo):
+      $ npm run docker:build
+      $ docker run -d --network host \
+        --name homelink-stash \
+        --restart unless-stopped \
+        -v "$(pwd)/settings.json:/usr/src/service/dist/settings.json" \
+        homelinkstash:latest
+```
+### Windows
 
-      docker run -d -h localhost  \
+Must be powershell
+
+```
+      PS>  npm run docker:build
+      PS>  docker run -d -h localhost  \
            --name homelink-stash    \
            --restart unless-stopped	 \
-           -e "NODE_ENV=local"   \
-           -v ${pwd}/src/env:/etc/homelink-stash/env \
-           homelinksink:latest
-
+           -v ${pwd}/settings.json:/usr/src/service/dist/settings.json \
+           homelinkstash:latest
 ```
 
 ## Database setup
 
-### MS Sql Server
-```
-
-USE master
-GO
-
-CREATE DATABASE Homelink;
-GO
-
-USE Homelink;
-GO
-
-CREATE LOGIN Homelink WITH PASSWORD=N'MyPassword', DEFAULT_DATABASE = Homelink
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE [name] = 'Homelink') EXEC ('CREATE SCHEMA [HomeLink]')
-GO
-
-CREATE USER Homelink FOR LOGIN Homelink WITH DEFAULT_SCHEMA = [Homelink]
-GO
-
-ALTER AUTHORIZATION ON SCHEMA::[Homelink] TO [Homelink]
-GO
-
-GRANT CREATE TABLE TO [Homelink]
-GO
-
-
-```
+Database will be setup automatically if configured to do so.

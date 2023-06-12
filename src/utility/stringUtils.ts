@@ -4,13 +4,6 @@ export function capatilise(s) {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-export function convertToAscii(input: string): string {
-    if (!input) {
-        return input;
-    }
-    return input.replace(/[^\x00-\x7F]/g, '');
-}
-
 export function titleCase(s) {
     if (typeof s !== 'string') return '';
 
@@ -19,14 +12,6 @@ export function titleCase(s) {
     }
 
     return capatilise(s);
-}
-
-export function safeTrim(input: string) {
-    if (!input) {
-        return input;
-    }
-
-    return input.trim();
 }
 
 export function camelToHuman(s): string {

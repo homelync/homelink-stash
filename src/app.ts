@@ -4,8 +4,7 @@ import { configuration } from './config/config';
 import { Logger } from './utility/logger';
 import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
-import { SqlDbConnection } from './forward/db/sqlDbConnection';
-import { runMigrations } from './forward/db/migrator';
+import { runMigrations } from './actions/database/migrator';
 
 let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
@@ -32,7 +31,7 @@ export async function startAllConsumers(): Promise<boolean> {
         deviceConsumer = DependencyInjectionContainer.get<ConsumerBase>(TYPES.DeviceConsumer);
         Logger.info('Now consuming devices');
     } else {
-        Logger.warn('Device consume is not enabled');
+        Logger.warn('Device consumer is not enabled');
     }
 
     if (configuration.alert.consume.enabled) {
@@ -83,7 +82,6 @@ function logStartup() {
     if (tz !== 'UTC') {
         throw Error(`Server must run as TZ = UTC but was ${tz}, check your TZ environment variable`);
     }
-    Logger.warn('Using timezone: ' + tz);
-    Logger.warn('Using configuration for environment: ' + configuration.environment);
-    Logger.warn('Process Id (PID): ' + process.pid);
+    Logger.info('Using timezone: ' + tz);
+    Logger.info('Using configuration for environment: ' + configuration.environment);
 }
