@@ -59,7 +59,7 @@ export async function runMigrations() {
                     continue;
                 }
 
-                Logger.debug(`Running migration from file ${fileToRun}`);
+                Logger.debug(`Running migration from file ${migrationFile}`);
                 await migration.up(queryInterface, Sequelize);
             }
         }
