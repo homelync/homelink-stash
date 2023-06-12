@@ -4,7 +4,7 @@ import { configuration } from './config/config';
 import { Logger } from './utility/logger';
 import { DependencyInjectionContainer } from './container';
 import { ConsumerBase } from './consumerBase';
-import { runMigrations } from './forward/db/migrator';
+import { runMigrations } from './actions/database/migrator';
 
 let deviceConsumer: ConsumerBase;
 let alertConsumer: ConsumerBase;
@@ -31,7 +31,7 @@ export async function startAllConsumers(): Promise<boolean> {
         deviceConsumer = DependencyInjectionContainer.get<ConsumerBase>(TYPES.DeviceConsumer);
         Logger.info('Now consuming devices');
     } else {
-        Logger.warn('Device consume is not enabled');
+        Logger.warn('Device consumer is not enabled');
     }
 
     if (configuration.alert.consume.enabled) {

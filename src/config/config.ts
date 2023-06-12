@@ -1,41 +1,41 @@
-import { resolve as pathResolve } from 'path';
-import { config } from 'dotenv';
-import { EntityConfig, RabbitHostConfig } from './rabbitConfig';
-import { SqlConfig, SqlDialect } from './sqlConfig';
+import { RabbitHostConfig } from './rabbitConfig';
+import { SqlConfig } from './sqlConfig';
+import { EntitySettings, getSettings } from './settings';
+import { EntityConfig } from './entityConfig';
 
-const env = process.env;
-const nodeEnv = env.NODE_ENV || 'local';
-if (process.env.IS_DOCKER === 'true') {
-    config({ path: pathResolve(__dirname, `/etc/homelink-stash/env/.env.${nodeEnv}`) });
-} else {
-    config({ path: pathResolve(__dirname, `../env/.env.${nodeEnv}`) });
-}
+const isDocker = process.env.IS_DOCKER === 'true';
+const settings = getSettings();
 
 function buildEntityConfig(entity: string): EntityConfig {
     try {
-
-        return {
+        const landlordReference = settings.landlordReference.toLowerCase();
+        const entityName = entity;
+        const entitySettings: EntitySettings = settings.entities[entityName];
+        const entityConfig: EntityConfig = {
             consume: {
-                deadLetterExchange: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}.deadletter`,
-                queue: `${env.LANDLORD_REFERENCE!.toLowerCase()}.${entity}`,
+                deadLetterExchange: `${settings.landlordReference}.${entity}.deadletter`,
+                queue: `${landlordReference}.${entity}`,
                 failedRoutingKey: '#',
                 maxRetry: 1,
                 prefetch: 100,
-                enabled: env[`${entity.toUpperCase()}_ENABLED`]!.toLowerCase() === 'true'
+                enabled: entitySettings.enabled
             },
-            actionType: env[`${entity.toUpperCase()}_ACTION`],
-            sns: {
-                clientId: env[`SNS_${entity.toUpperCase()}_CLIENTID`]!,
-                clientSecret: env[`SNS_${entity.toUpperCase()}_CCLIENTSECRET`]!,
-                topic: env[`SNS_${entity.toUpperCase()}_TOPIC`]!
-            },
+            actionType: entitySettings.action,
+            sns: entitySettings.sns,
             hook: {
-                url: env[`HOOK_${entity.toUpperCase()}_URL`]!,
+                endpoint: entitySettings.webhook.endpoint,
+                authenticationMethod: entitySettings.webhook.authenticationMethod,
+                method: entitySettings.webhook.method,
+                username: entitySettings.webhook.username,
+                password: entitySettings.webhook.password,
+                successCodes: entitySettings.webhook.successCodes.split(',').map(x => Number(x.trim()))
             },
-            usesDb: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('database'),
-            usesSns: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('sns'),
-            usesHook: !!env[`${entity.toUpperCase()}_ACTION`]?.toLowerCase()?.includes('hook')
+            usesDb: entitySettings.action === 'database',
+            usesSns: entitySettings.action === 'sns',
+            usesHook: entitySettings.action === 'webhook',
         };
+
+        return entityConfig;
     } catch (err) {
         console.error(`Error processing config for ${entity}`, err);
         throw err;
@@ -43,27 +43,48 @@ function buildEntityConfig(entity: string): EntityConfig {
 }
 
 const sqlConfig: SqlConfig = {
-    dialect: env.SQL_DIALECT as SqlDialect,
-    host: env.SQL_HOST!,
-    database: env.SQL_DATABASE!,
-    user: env.SQL_USERNAME!,
-    password: env.SQL_PASSWORD!,
-    port: parseInt(env.SQL_PORT!, 10),
-    timezone: env.SQL_TIMEZONE || '+00:00'
+    dialect: settings.database.dialect,
+    host: settings.database.host,
+    database: settings.database.database,
+    user: settings.database.user,
+    password: settings.database.password,
+    port: settings.database.port,
+    timezone: settings.database.timezone
 };
 
+
 const rabbitHostConfig: RabbitHostConfig = {
-    host: env.RABBIT_HOST,
-    port: Number(env.RABBIT_PORT),
-    vhost: env.RABBIT_VIRTUAL_HOST,
-    tls: env.RABBIT_TLS === 'true',
-    username: env.RABBIT_USERNAME,
-    password: env.RABBIT_PASSWORD,
+    host: settings.system.broker.host,
+    port: settings.system.broker.port,
+    vhost: settings.landlordReference,
+    tls: true,
+    username: settings.landlordReference,
+    password: settings.password,
     publishTimeoutMs: 5000
 };
 
-const baseConfiguration = {
-    environment: nodeEnv,
+export interface LogConfig {
+    loglevel: string;
+    human: boolean;
+}
+
+export interface Config {
+    environment: string;
+    isDocker: boolean;
+    device: EntityConfig;
+    alert: EntityConfig;
+    property: EntityConfig;
+    notification: EntityConfig;
+    reading: EntityConfig;
+    rabbitHost: RabbitHostConfig;
+    enableDb: boolean;
+    logging: LogConfig,
+    sqlConfig: SqlConfig
+}
+
+const baseConfiguration: Config = {
+    environment: process.env.NODE_ENV || 'local',
+    isDocker: isDocker,
     device: buildEntityConfig('device'),
     alert: buildEntityConfig('alert'),
     reading: buildEntityConfig('reading'),
@@ -72,10 +93,10 @@ const baseConfiguration = {
     rabbitHost: rabbitHostConfig,
     enableDb: false,
     logging: {
-        loglevel: env.LOG_LEVEL,
-        human: env.LOGGING_HUMAN === 'true'
+        loglevel: settings.logging.level,
+        human: settings.logging.human
     },
-    store: sqlConfig
+    sqlConfig: sqlConfig
 };
 
 baseConfiguration.enableDb = baseConfiguration.alert.usesDb

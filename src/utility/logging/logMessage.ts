@@ -1,5 +1,4 @@
 import { configuration } from '../../config/config';
-import { getCorrelationId, getTaskId } from '../asyncLocalStore';
 import { replaceErrors } from './loggingUtilities';
 
 const os = require('os');
@@ -21,16 +20,14 @@ export class LogMessage {
         this.createdDate = new Date().toISOString();
         this.environment = configuration?.environment;
         this.machineName = os.hostname();
-        this.correlationId = correlationId || getCorrelationId();
-        this.taskId = getTaskId();
+        this.correlationId = correlationId || '';
     }
 
     public createdDate: string;
     public environment: string;
-    public component = 'reading-consumer';
+    public component = 'homelink-stash';
     public machineName: string;
     public correlationId: string;
-    public taskId: string;
 
     public toLogString() {
 
@@ -43,8 +40,7 @@ export class LogMessage {
         }
 
         const formattedData = this.formatData(this.data);
-        //      [level, createdDate, environment, component, machineName, correlationId, taskId, eventId, tag, responseTime, method, message, data]
-        return `[${this.level}] ${this.createdDate} ${this.environment} ${this.component} ${this.machineName} ${this.correlationId} ${this.taskId} ${this.eventId || 0} ${this.tag || this.placeholder} ${this.responseTimeMs || this.placeholder} ${this.method || this.placeholder} [${this.message}] ${formattedData}`;
+        return `[${this.level}] ${this.createdDate} ${this.environment} ${this.component} ${this.machineName} ${this.correlationId} ${this.eventId || 0} ${this.tag || this.placeholder} ${this.responseTimeMs || this.placeholder} ${this.method || this.placeholder} [${this.message}] ${formattedData}`;
     }
 
     private formatData(args: any): string {

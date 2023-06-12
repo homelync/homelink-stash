@@ -1,16 +1,14 @@
 import { Logger } from '../utility/logger';
 import { Channel, ConsumeMessage } from 'amqplib';
 import { RabbitConsumeConfig } from '../config/rabbitConfig';
-import { getCorrelationId } from './asyncLocalStore';
-import { MessageType } from 'aws-sdk/clients/configservice';
 import { EventCode } from '../model/eventCode';
+import { MessageType } from '../model/messageType';
 
 export async function handleError(errMsg: string, exp: Error, config: RabbitConsumeConfig, msg: ConsumeMessage, channel: Channel, messageType: MessageType) {
     Logger.warn(`Rejecting - ${messageType} message`, exp.message || exp, EventCode.retryingMessage, messageType);
     const rejectReason = getRejectReason(exp, config);
-    const correlationId = getCorrelationId();
 
-    await requeue(rejectReason, channel, config.deadLetterExchange, correlationId, msg);
+    await requeue(rejectReason, channel, config.deadLetterExchange, msg);
 }
 
 export async function handleWithRetries(errMsg: string, exp: Error, config: RabbitConsumeConfig, msg: ConsumeMessage, channel: Channel, messageType: MessageType) {
@@ -23,9 +21,8 @@ export async function handleWithRetries(errMsg: string, exp: Error, config: Rabb
         channel.reject(msg, false);
     } else {
         Logger.warn(`Deadlettering - max retries exceeded. ${config.maxRetry} of ${config.maxRetry}`, exp.message || exp, EventCode.deadletteringMessage, messageType);
-        const correlationId = getCorrelationId();
         const rejectReason = getRejectReason(exp, config);
-        await requeue(rejectReason, channel, config.deadLetterExchange, correlationId, msg);
+        await requeue(rejectReason, channel, config.deadLetterExchange, msg);
     }
 }
 
@@ -47,18 +44,17 @@ export function getXDeathCount(msg: ConsumeMessage, config: RabbitConsumeConfig)
     return exchangeDeathCount;
 }
 
-async function requeue(rejectReason: string, channel: Channel, exchange: string, correlationId: string, msg: ConsumeMessage) {
+async function requeue(rejectReason: string, channel: Channel, exchange: string, msg: ConsumeMessage) {
 
     try {
         await channel.publish(exchange, msg.fields.routingKey, msg.content, {
             persistent: true,
-            headers: { 'x-reject-reason': rejectReason, correlationId: correlationId }
+            headers: { 'x-reject-reason': rejectReason }
         });
     } catch (err: any) {
         Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
         await channel.publish(exchange, msg.fields.routingKey, msg.content, {
-            persistent: true,
-            headers: { correlationId: correlationId }
+            persistent: true
         });
     }
     channel.ack(msg);

@@ -1,0 +1,1 @@
+export type EntityType = 'device' | 'property' | 'alert' | 'notification' | 'reading';
