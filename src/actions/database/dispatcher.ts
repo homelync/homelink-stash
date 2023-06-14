@@ -24,6 +24,7 @@ export class Dispatcher {
             case 'reading':
                 const readingSql = dbConnection.builder(`${database}.${this.entityType}Message`).insert(record).toString();
                 await dbConnection.executeRaw(`${readingSql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`);
+                break;
             case 'notification':
                 await dbConnection.knexRaw().transaction(async (trx) => {
                     for (const a of record.alerts) {

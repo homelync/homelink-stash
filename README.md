@@ -20,7 +20,9 @@ Specify config your config by copying the examples template from  [./src/envTemp
       $ docker run -d --network host \
         --name homelink-stash \
         --restart unless-stopped \
-        -v "$(pwd)/settings.json:/usr/src/service/dist/settings.json" \
+        --log-opt max-size=10m \
+        --log-opt max-file=5 \
+        -v "$(pwd)/settings.json:/usr/src/service/settings.json" \
         homelinkstash:latest
 ```
 ### Windows
@@ -29,10 +31,12 @@ Must be powershell
 
 ```
       PS>  npm run docker:build
-      PS>  docker run -d -h localhost  \
-           --name homelink-stash    \
-           --restart unless-stopped	 \
-           -v ${pwd}/settings.json:/usr/src/service/dist/settings.json \
+      PS>  docker run -d -h localhost `
+           --name homelink-stash `
+           --restart unless-stopped	`
+           --log-opt max-size=10m `
+           --log-opt max-file=5 `
+           -v ${pwd}/settings.json:/usr/src/service/settings.json `
            homelinkstash:latest
 ```
 

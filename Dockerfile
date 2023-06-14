@@ -11,8 +11,6 @@ WORKDIR /src
 RUN npm ci
 
 RUN npm run build
-#RUN npm run test:unit
-
 RUN npm prune --production
 
 #Second Layer
@@ -22,10 +20,10 @@ RUN apk add --update --no-cache curl
 
 EXPOSE 3000
 
-WORKDIR /usr/src/service
+WORKDIR /stash
 
 COPY --from=build /src/node_modules node_modules
-COPY --from=build /src/dist dist
+COPY --from=build /src/dist /stash
 
 HEALTHCHECK --interval=5s \
             --timeout=5s \
@@ -37,4 +35,4 @@ USER node
 ENV TZ UTC
 ENV IS_DOCKER true
 
-CMD ["node", "./dist/index.js"]
+CMD ["node", "./index.js"]
