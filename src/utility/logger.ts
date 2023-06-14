@@ -112,7 +112,6 @@ export class Logger {
     public static metric(type: 'counter' | 'timing', name: string, value: number, eventId: number, context?: string, method?: string) {
         if (Logger.shouldLog) {
             const metric = {
-                environment: configuration.environment,
                 data: { metricName: name, metricValue: value },
                 type: type,
                 context: context,

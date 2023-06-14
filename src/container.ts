@@ -17,7 +17,6 @@ import { ActionExecutor } from './actions/actionExecutor';
 
 let DependencyInjectionContainer = new Container();
 
-// Homelync Rabbit Connection
 const rabbitUrl = configuration.rabbitHost.port
     ? `${configuration.rabbitHost.host}:${configuration.rabbitHost.port}`
     : configuration.rabbitHost.host;
@@ -27,35 +26,33 @@ const connectionString = `${protocol}${configuration.rabbitHost.username}:${conf
 const amqpConnectionManager = amqpConnect([connectionString]);
 const rabbitConnectionManager = new RabbitConnectionManager(amqpConnectionManager, rabbitUrl!);
 
-DependencyInjectionContainer.bind<SqlDbConnection>(TYPES.SqlDbConnection).to(SqlDbConnection);
-
 DependencyInjectionContainer.bind<IRabbitConnectionManager>(TYPES.RabbitConnectionManager).toConstantValue(rabbitConnectionManager);
-
-DependencyInjectionContainer.bind<ActionExecutor>(TYPES.ActionExecutor).to(ActionExecutor);
+DependencyInjectionContainer.bind<SqlDbConnection>(TYPES.SqlDbConnection).to(SqlDbConnection).inSingletonScope();;
+DependencyInjectionContainer.bind<ActionExecutor>(TYPES.ActionExecutor).to(ActionExecutor).inSingletonScope();;
 
 // Device
 DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.DeviceRabbitConfig).toConstantValue(configuration.device.consume);
-DependencyInjectionContainer.bind<ConsumerBase>(TYPES.DeviceConsumer).to(DeviceConsumer);
-DependencyInjectionContainer.bind<ISnsClient>(TYPES.DeviceSnsClient).to(DeviceSnsClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.DeviceConsumer).to(DeviceConsumer).inSingletonScope();;
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.DeviceSnsClient).to(DeviceSnsClient).inSingletonScope();;
 
 // Alert
 DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.AlertRabbitConfig).toConstantValue(configuration.alert.consume);
-DependencyInjectionContainer.bind<ConsumerBase>(TYPES.AlertConsumer).to(AlertConsumer);
-DependencyInjectionContainer.bind<ISnsClient>(TYPES.AlertSnsClient).to(AlertSnsClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.AlertConsumer).to(AlertConsumer).inSingletonScope();;
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.AlertSnsClient).to(AlertSnsClient).inSingletonScope();;
 
 // Notification
 DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.NotificationRabbitConfig).toConstantValue(configuration.notification.consume);
-DependencyInjectionContainer.bind<ConsumerBase>(TYPES.NotificationConsumer).to(NotificationConsumer);
-DependencyInjectionContainer.bind<ISnsClient>(TYPES.NotificationSnsClient).to(NotificationSnsClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.NotificationConsumer).to(NotificationConsumer).inSingletonScope();;
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.NotificationSnsClient).to(NotificationSnsClient).inSingletonScope();;
 
 // Property
 DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.PropertyRabbitConfig).toConstantValue(configuration.property.consume);
-DependencyInjectionContainer.bind<ConsumerBase>(TYPES.PropertyConsumer).to(PropertyConsumer);
-DependencyInjectionContainer.bind<ISnsClient>(TYPES.PropertySnsClient).to(PropertySnsClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.PropertyConsumer).to(PropertyConsumer).inSingletonScope();;
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.PropertySnsClient).to(PropertySnsClient).inSingletonScope();;
 
 // Reading
 DependencyInjectionContainer.bind<RabbitConsumeConfig>(TYPES.ReadingRabbitConfig).toConstantValue(configuration.reading.consume);
-DependencyInjectionContainer.bind<ConsumerBase>(TYPES.ReadingConsumer).to(ReadingConsumer);
-DependencyInjectionContainer.bind<ISnsClient>(TYPES.ReadingSnsClient).to(ReadingSnsClient);
+DependencyInjectionContainer.bind<ConsumerBase>(TYPES.ReadingConsumer).to(ReadingConsumer).inSingletonScope();;
+DependencyInjectionContainer.bind<ISnsClient>(TYPES.ReadingSnsClient).to(ReadingSnsClient).inSingletonScope();;
 
 export { DependencyInjectionContainer };
