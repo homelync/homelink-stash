@@ -22,7 +22,7 @@ Specify config your config by copying the examples template from  [./src/envTemp
         --restart unless-stopped \
         --log-opt max-size=10m \
         --log-opt max-file=5 \
-        -v "$(pwd)/settings.json:/usr/src/service/settings.json" \
+        -v "$(pwd)/settings.json:/stash/settings.json" \
         homelinkstash:latest
 ```
 ### Windows
@@ -36,7 +36,7 @@ Must be powershell
            --restart unless-stopped	`
            --log-opt max-size=10m `
            --log-opt max-file=5 `
-           -v ${pwd}/settings.json:/usr/src/service/settings.json `
+           -v ${pwd}/settings.json:/stash/settings.json `
            homelinkstash:latest
 ```
 
