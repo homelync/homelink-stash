@@ -14,6 +14,7 @@
     "nvm:default": ". ~/.nvm/nvm.sh && nvm alias default 16.18.0",
     "lint": "tslint -c \"./tslint.json\" -p \"./tsconfig.json\"",
     "docker:build": "docker build . -t aicohomelink/stash:latest",
+    "docker:push": "docker push aicohomelink/stash:latest",
     "test:unit": "mocha --exit --require ts-node/register src/test/unit/**/*.ts",
     "test:e2e": "cross-env TZ=UTC mocha --exit --timeout 30000 --require ts-node/register src/test/e2e/**/*.spec.ts",
     "test:integration": "mocha --exit --timeout 30000 --require ts-node/register src/test/integration/**/*.spec.ts",
