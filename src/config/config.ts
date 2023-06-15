@@ -56,7 +56,7 @@ const rabbitHostConfig: RabbitHostConfig = {
     vhost: settings.landlordReference,
     tls: false,
     username: settings.landlordReference,
-    password: settings.password,
+    password: process.env.CONDUIT_PASSWORD || settings.password,
     publishTimeoutMs: 5000
 };
 
