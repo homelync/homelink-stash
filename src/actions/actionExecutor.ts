@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { Config } from 'homelinkstash-plugin-sdk';
+import { Config } from 'homelink-stash-sdk';
 import { EntityType } from '../model/types';
 import 'reflect-metadata';
 import { Logger } from '../utility/logger';

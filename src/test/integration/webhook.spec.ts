@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { WebhookDispatcher as Dispatcher } from 'homelinkstash-plugin-sdk';
+import { WebhookDispatcher as Dispatcher } from 'homelink-stash-sdk';
 import { TestHttpServer } from '../utils/webhooks/testServer';
 
 describe(`Webhook Dispatcher`, () => {

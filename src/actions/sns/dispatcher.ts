@@ -1,4 +1,4 @@
-import { Config } from 'homelinkstash-plugin-sdk';
+import { Config } from 'homelink-stash-sdk';
 import { SnsConfig } from '../../config/snsConfig';
 import { DependencyInjectionContainer } from '../../container';
 import { TYPES } from '../../global/types';

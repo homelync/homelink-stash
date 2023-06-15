@@ -6,7 +6,7 @@ import { LogMessage } from './logging/logMessage';
 import { camelToHuman, titleCase } from './stringUtils';
 import { EventCode } from '../model/eventCode';
 import { injectable } from 'inversify';
-import { ILogger } from 'homelinkstash-plugin-sdk';
+import { ILogger } from 'homelink-stash-sdk';
 import 'reflect-metadata';
 var colors = require('colors/safe');
 

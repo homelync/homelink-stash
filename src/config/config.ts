@@ -1,4 +1,4 @@
-import { RabbitHostConfig, SqlConfig, EntityConfig, Config } from 'homelinkstash-plugin-sdk';
+import { RabbitHostConfig, SqlConfig, EntityConfig, Config } from 'homelink-stash-sdk';
 import { EntitySettings, getSettings } from './settings';
 
 const isDocker = process.env.IS_DOCKER === 'true';

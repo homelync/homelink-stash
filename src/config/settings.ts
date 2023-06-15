@@ -1,5 +1,5 @@
 import { plainToClassFromExist } from 'class-transformer';
-import { SqlDialect } from 'homelinkstash-plugin-sdk';
+import { SqlDialect } from 'homelink-stash-sdk';
 
 export class LoggingSettings {
     public level: string = 'info';

@@ -13,10 +13,10 @@ import { NotificationConsumer } from './notificationConsumer';
 import { PropertyConsumer } from './propertyConsumer';
 import { ReadingConsumer } from './readingConsumer';
 import { ActionDispatcher, ActionExecutor } from './actions/actionExecutor';
-import { WebhookDispatcher, RabbitConsumeConfig } from 'homelinkstash-plugin-sdk';
+import { WebhookDispatcher, RabbitConsumeConfig } from 'homelink-stash-sdk';
 import { Dispatcher as SnsDispatcher } from './actions/sns/dispatcher';
 import { InstanceLogger } from './utility/logger';
-import { ILogger } from 'homelinkstash-plugin-sdk';
+import { ILogger } from 'homelink-stash-sdk';
 
 let DependencyInjectionContainer = new Container();
 

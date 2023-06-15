@@ -1,4 +1,4 @@
-import { Config, SqlConfig } from 'homelinkstash-plugin-sdk';
+import { Config, SqlConfig } from 'homelink-stash-sdk';
 import { DependencyInjectionContainer } from '../../container';
 import { TYPES } from '../../global/types';
 import { EntityType } from '../../model/types';
