@@ -1,6 +1,6 @@
 import { Logger } from '../utility/logger';
 import { Channel, ConsumeMessage } from 'amqplib';
-import { RabbitConsumeConfig } from '../config/rabbitConfig';
+import { RabbitConsumeConfig } from 'homelinkstash-plugin-sdk';
 import { EventCode } from '../model/eventCode';
 import { MessageType } from '../model/messageType';
 

@@ -1,6 +1,5 @@
 import { plainToClassFromExist } from 'class-transformer';
-
-export type SqlDialect = 'mysql' | 'mssql';
+import { SqlDialect } from 'homelinkstash-plugin-sdk';
 
 export class LoggingSettings {
     public level: string = 'info';
@@ -58,6 +57,9 @@ export class EntitiesSettings {
     public reading: EntitySettings = new EntitySettings();
 }
 
+export interface PluginSettings {
+    name: string;
+}
 export class Settings {
     public landlordReference: string = '';
     public password: string = '';
@@ -65,6 +67,7 @@ export class Settings {
     public database: SqlSettings = new SqlSettings();
     public logging: LoggingSettings = new LoggingSettings();
     public system: SystemSettings = new SystemSettings();
+    public plugins: PluginSettings[] = [];
 }
 
 export function getSettings(): Settings {

@@ -5,6 +5,9 @@ import { LogMessage } from './logging/logMessage';
 
 import { camelToHuman, titleCase } from './stringUtils';
 import { EventCode } from '../model/eventCode';
+import { injectable } from 'inversify';
+import { ILogger } from 'homelinkstash-plugin-sdk';
+import 'reflect-metadata';
 var colors = require('colors/safe');
 
 const { timestamp, printf } = logger.format;
@@ -89,7 +92,7 @@ logger.configure({
     }
 });
 
-export type Level =  'error' | 'warn' | 'metric' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
+export type Level = 'error' | 'warn' | 'metric' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
 
 export const stream = {
     write: function (message, encoding) {
@@ -150,5 +153,36 @@ export class Logger {
 
     public static debug(message: string, data: any = null, eventId = 0, tag = '', correlationId?: string): void {
         if (Logger.shouldLog) Logger.winston.debug(new LogMessage('debug', message, data, eventId, tag, undefined, undefined, correlationId));
+    }
+}
+
+@injectable()
+export class InstanceLogger implements ILogger {
+    public timing(name: string, value: number, eventId = 1209, context?: string, method?: string) {
+        Logger.timing(name, value, eventId, context, method);
+    }
+
+    public count(name: string, value: number, eventId = 1209, context?: string, method?: string) {
+        Logger.count(name, value, eventId, context, method);
+    }
+
+    public info(message: string, data: any = null, eventId = 0, tag = ''): void {
+        Logger.info(message, data, eventId, tag);
+    }
+
+    public debug(message: string, data: any = null, eventId = 0, tag = ''): void {
+        Logger.debug(message, data, eventId, tag);
+    }
+
+    public verbose(message: string, data: any = null, eventId = 0, tag = ''): void {
+        Logger.verbose(message, data, eventId, tag);
+    }
+
+    public warn(message: string, data: any = null, eventId = 0, tag = ''): void {
+        Logger.warn(message, data, eventId, tag);
+    }
+
+    public error(message: string, data: any, eventId = 0, tag = ''): void {
+        Logger.error(message, data, eventId, tag);
     }
 }

@@ -6,6 +6,9 @@
 /tmp
 /out-tsc
 
+# plugins
+/src/plugins
+
 # sensitive files
 /src/env/*
 settings.json

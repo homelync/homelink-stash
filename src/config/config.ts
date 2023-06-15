@@ -1,7 +1,5 @@
-import { RabbitHostConfig } from './rabbitConfig';
-import { SqlConfig } from './sqlConfig';
+import { RabbitHostConfig, SqlConfig, EntityConfig, Config } from 'homelinkstash-plugin-sdk';
 import { EntitySettings, getSettings } from './settings';
-import { EntityConfig } from './entityConfig';
 
 const isDocker = process.env.IS_DOCKER === 'true';
 const settings = getSettings();
@@ -52,35 +50,15 @@ const sqlConfig: SqlConfig = {
     timezone: settings.database.timezone
 };
 
-
 const rabbitHostConfig: RabbitHostConfig = {
     host: settings.system.broker.host,
     port: settings.system.broker.port,
     vhost: settings.landlordReference,
-    tls: true,
+    tls: false,
     username: settings.landlordReference,
     password: settings.password,
     publishTimeoutMs: 5000
 };
-
-export interface LogConfig {
-    loglevel: string;
-    human: boolean;
-}
-
-export interface Config {
-    environment: string;
-    isDocker: boolean;
-    device: EntityConfig;
-    alert: EntityConfig;
-    property: EntityConfig;
-    notification: EntityConfig;
-    reading: EntityConfig;
-    rabbitHost: RabbitHostConfig;
-    enableDb: boolean;
-    logging: LogConfig,
-    sqlConfig: SqlConfig
-}
 
 const baseConfiguration: Config = {
     environment: process.env.NODE_ENV || 'local',
@@ -96,7 +74,8 @@ const baseConfiguration: Config = {
         loglevel: settings.logging.level,
         human: settings.logging.human
     },
-    sqlConfig: sqlConfig
+    sqlConfig: sqlConfig,
+    plugins: settings.plugins
 };
 
 baseConfiguration.enableDb = baseConfiguration.alert.usesDb

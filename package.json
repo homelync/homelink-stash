@@ -51,6 +51,7 @@
     "amqp-connection-manager": "^3.2.0",
     "amqplib": "^0.8.0",
     "class-transformer": "^0.5.1",
+    "homelinkstash-plugin-sdk": "^0.0.3",
     "inversify": "^5.0.1",
     "knex": "^0.21.17",
     "mssql": "^6.4.1",

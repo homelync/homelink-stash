@@ -1,5 +1,5 @@
-import express from "express";
-import { AuthenticationType } from "../../../config/settings";
+import express from 'express';
+import { AuthenticationType } from '../../../config/settings';
 export class TestHttpServer {
     constructor(
         private authType: AuthenticationType,
@@ -24,7 +24,7 @@ export class TestHttpServer {
                 res.status(req.body.statusCode);
             }
             res.send('Successfully received webhook');
-        }
+        };
 
         app.post('/webhook', async (req, res) => {
             handleRequest('post', req, res);
@@ -72,7 +72,7 @@ export class TestHttpServer {
                 break;
             case 'bearer':
                 app.use((req, res, next) => {
-                    const authHeader = req.headers['authorization'];
+                    const authHeader = req.headers.authorization;
                     if (!authHeader || authHeader !== `Bearer ${this.password}`) {
                         res.status(401);
                         res.send();

@@ -11,7 +11,7 @@ import { EventCode } from './model/eventCode';
 
 import { Timing } from './utility/timing';
 import { MessageType } from './model/messageType';
-import { RabbitConsumeConfig } from './config/rabbitConfig';
+import { RabbitConsumeConfig } from 'homelinkstash-plugin-sdk';
 import { ActionExecutor } from './actions/actionExecutor';
 
 @injectable()

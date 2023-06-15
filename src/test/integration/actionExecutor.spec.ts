@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import { TestHttpServer } from '../utils/webhooks/testServer';
-import { ActionExecutor } from '../../actions/actionExecutor';
+import { ActionDispatcher, ActionExecutor } from '../../actions/actionExecutor';
 import 'reflect-metadata';
+import { DependencyInjectionContainer } from '../../container';
+import { TYPES } from '../../global/types';
 
 describe(`Action Executor`, () => {
 
@@ -23,6 +25,9 @@ describe(`Action Executor`, () => {
                 }
             }
         };
+
+        const webhookDispatcher = DependencyInjectionContainer.get<ActionDispatcher>(TYPES.webhookDispatcher);
+        (webhookDispatcher as any).config = config;
 
         it(`Should successfully POST`, async () => {
             webServer.clearLogs();

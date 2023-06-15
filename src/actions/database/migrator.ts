@@ -2,7 +2,7 @@ import { Sequelize, Options } from 'sequelize';
 import { configuration } from '../../config/config';
 import path from 'path';
 import { Logger } from '../../utility/logger';
-import { EntityConfig } from '../../config/entityConfig';
+import { EntityConfig } from 'homelinkstash-plugin-sdk';
 
 const sequelizeOptions: Options = {
     dialect: configuration.sqlConfig.dialect,

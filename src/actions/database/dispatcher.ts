@@ -1,28 +1,33 @@
-import { Config } from "../../config/config";
-import { DependencyInjectionContainer } from "../../container";
-import { TYPES } from "../../global/types";
-import { EntityType } from "../../model/types";
-import { Logger } from "../../utility/logger";
-import { SqlDbConnection } from "./sqlDbConnection";
+import { Config, SqlConfig } from 'homelinkstash-plugin-sdk';
+import { DependencyInjectionContainer } from '../../container';
+import { TYPES } from '../../global/types';
+import { EntityType } from '../../model/types';
+import { Logger } from '../../utility/logger';
+import { ActionDispatcher } from '../actionExecutor';
+import { SqlDbConnection } from './sqlDbConnection';
 
-export class Dispatcher {
+export class Dispatcher implements ActionDispatcher {
 
-    constructor(private config: Config, private entityType: EntityType) {
+    constructor(private config: Config) {
     }
 
-    public async dispatch(payload: object) {
+    public async dispatch(payload: object, entityType: EntityType): Promise<void> {
+        const sqlConfig = this.config.sqlConfig;
+        await this.execute(payload, sqlConfig, entityType);
+    }
 
-        const database = this.config.sqlConfig.database;
+    public async execute(payload: object, sqlConfig: SqlConfig, entityType: EntityType): Promise<void> {
+        const database = sqlConfig.database;
         const dbConnection = DependencyInjectionContainer.get<SqlDbConnection>(TYPES.SqlDbConnection);
         Logger.debug(`Persisting to database ${database} database`);
         const record = this.prepareForInsert(payload) as any;
 
-        switch (this.entityType) {
+        switch (entityType) {
             case 'property':
             case 'device':
             case 'alert':
             case 'reading':
-                const readingSql = dbConnection.builder(`${database}.${this.entityType}Message`).insert(record).toString();
+                const readingSql = dbConnection.builder(`${database}.${entityType}Message`).insert(record).toString();
                 await dbConnection.executeRaw(`${readingSql} ON DUPLICATE KEY UPDATE __IDENTITY = __IDENTITY;`);
                 break;
             case 'notification':
@@ -66,5 +71,3 @@ export class Dispatcher {
         return record;
     }
 }
-
-module.exports = Dispatcher;
