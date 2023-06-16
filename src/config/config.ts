@@ -54,7 +54,7 @@ const rabbitHostConfig: RabbitHostConfig = {
     host: process.env.CONDUIT_HOST || settings.system.broker.host,
     port: process.env.CONDUIT_PORT || settings.system.broker.port,
     vhost: process.env.CONDUIT_VHOST || settings.landlordReference,
-    tls: process.env.CONDUIT_TLS || true,
+    tls: process.env.CONDUIT_INSECURE === 'true' ? false : true,
     username: process.env.CONDUIT_USER || settings.landlordReference,
     password: process.env.CONDUIT_PASSWORD || settings.password,
     publishTimeoutMs: 5000
@@ -86,6 +86,6 @@ baseConfiguration.enableDb = baseConfiguration.alert.usesDb
 
 export const configuration = baseConfiguration;
 
-export async function loadConfig() {
-    // Dummy method to load this module as part of the promise chain startup.
+export async function loadConfig(): Promise<string> {
+    return baseConfiguration;
 }

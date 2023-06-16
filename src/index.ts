@@ -3,7 +3,8 @@ import { loadConfig } from './config/config';
 import { Logger } from './utility/logger';
 
 async function runStartup() {
-    await loadConfig();
+    const config = await loadConfig();
+    Logger.debug(JSON.stringify(config, null, 4));
     await initialisePlugins();
     await ensureSchema();
     await startAllConsumers();
