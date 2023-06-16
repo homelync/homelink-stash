@@ -51,11 +51,11 @@ const sqlConfig: SqlConfig = {
 };
 
 const rabbitHostConfig: RabbitHostConfig = {
-    host: settings.system.broker.host,
-    port: settings.system.broker.port,
-    vhost: settings.landlordReference,
-    tls: false,
-    username: settings.landlordReference,
+    host: process.env.CONDUIT_HOST || settings.system.broker.host,
+    port: process.env.CONDUIT_PORT || settings.system.broker.port,
+    vhost: process.env.CONDUIT_VHOST || settings.landlordReference,
+    tls: process.env.CONDUIT_TLS || true,
+    username: process.env.CONDUIT_USER || settings.landlordReference,
     password: process.env.CONDUIT_PASSWORD || settings.password,
     publishTimeoutMs: 5000
 };
