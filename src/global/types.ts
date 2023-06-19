@@ -38,6 +38,7 @@ export const TYPES = {
     snsDispatcher: Symbol('SnsDispatcher'),
     databaseDispatcher: Symbol('DatabaseDispatcher'),
 
-    // Utility
-    Logger: Symbol('Logger')
+    // Logging
+    Logger: Symbol('Logger'),
+    RabbitPublisher: Symbol('RabbitPublisher')
 };

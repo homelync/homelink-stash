@@ -4,6 +4,7 @@ import { SqlDialect } from 'homelink-stash-sdk';
 export class LoggingSettings {
     public level: string = 'info';
     public human: boolean = false;
+    public suppressRemote: boolean = false;
 }
 
 export class BrokerSettings {
@@ -59,6 +60,7 @@ export class EntitiesSettings {
 
 export interface PluginSettings {
     name: string;
+    settings: any;
 }
 export class Settings {
     public landlordReference: string = '';
@@ -67,6 +69,7 @@ export class Settings {
     public database: SqlSettings = new SqlSettings();
     public logging: LoggingSettings = new LoggingSettings();
     public system: SystemSettings = new SystemSettings();
+    public httpTimeout = 2000;
     public plugins: PluginSettings[] = [];
 }
 

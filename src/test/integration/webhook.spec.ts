@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { WebhookDispatcher as Dispatcher } from 'homelink-stash-sdk';
+import { TestLogger, WebhookDispatcher as Dispatcher } from 'homelink-stash-sdk';
 import { TestHttpServer } from '../utils/webhooks/testServer';
 
 describe(`Webhook Dispatcher`, () => {
@@ -22,7 +22,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -44,7 +44,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -66,7 +66,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -88,7 +88,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -110,7 +110,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data', statusCode: 404 }, 'device');
 
@@ -138,7 +138,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'supersecret'
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -166,7 +166,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'my-secret'
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 
@@ -194,7 +194,7 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'MYTOKEN123'
                     }
                 }
-            } as any);
+            } as any, new TestLogger());
 
             await dispatcher.dispatch({ test: 'data' }, 'device');
 

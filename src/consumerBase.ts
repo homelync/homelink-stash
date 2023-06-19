@@ -1,7 +1,6 @@
 import { Channel, ConsumeMessage } from 'amqplib';
 import { injectable, unmanaged } from 'inversify';
 
-import { IRabbitConnectionManager } from './service/rabbitConnectionManager';
 import { ChannelWrapper } from 'amqp-connection-manager';
 
 import { Logger } from './utility/logger';
@@ -13,6 +12,7 @@ import { Timing } from './utility/timing';
 import { MessageType } from './model/messageType';
 import { RabbitConsumeConfig } from 'homelink-stash-sdk';
 import { ActionExecutor } from './actions/actionExecutor';
+import { IRabbitConnectionManager } from 'homelink-stash-sdk/services/rabbitmq/rabbitConnectionManager';
 
 @injectable()
 export class ConsumerBase {

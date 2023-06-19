@@ -57,7 +57,7 @@ async function requeue(rejectReason: string, channel: Channel, exchange: string,
             persistent: true
         });
     }
-    channel.ack(msg);
+    await channel.ack(msg);
 }
 
 function getRejectReason(exp: Error, config: RabbitConsumeConfig): string {

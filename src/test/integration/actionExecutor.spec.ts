@@ -4,6 +4,7 @@ import { ActionDispatcher, ActionExecutor } from '../../actions/actionExecutor';
 import 'reflect-metadata';
 import { DependencyInjectionContainer } from '../../container';
 import { TYPES } from '../../global/types';
+import { MockRabbitPublisherService } from '../utils/rabbitmq/mockPublisher';
 
 describe(`Action Executor`, () => {
 
@@ -31,7 +32,7 @@ describe(`Action Executor`, () => {
 
         it(`Should successfully POST`, async () => {
             webServer.clearLogs();
-            const executor = new ActionExecutor();
+            const executor = new ActionExecutor(new MockRabbitPublisherService());
             await executor.execute(config as any, 'device', { test: 'data' });
 
             expect(webServer.webHookLog.length).to.eql(1);

@@ -18,7 +18,8 @@
             "outputCapture": "std",
             "envFile": "${workspaceFolder}/src/env/.env.local",
             "env": {
-                "TZ": "UTC"
+                "TZ": "UTC",
+                "CONDUIT_INSECURE": "true"
             }
         },
         {

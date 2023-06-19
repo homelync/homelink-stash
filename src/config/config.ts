@@ -52,7 +52,7 @@ const sqlConfig: SqlConfig = {
 
 const rabbitHostConfig: RabbitHostConfig = {
     host: process.env.CONDUIT_HOST || settings.system.broker.host,
-    port: process.env.CONDUIT_PORT || settings.system.broker.port,
+    port: process.env.CONDUIT_PORT ? Number(process.env.CONDUIT_PORT) : settings.system.broker.port,
     vhost: process.env.CONDUIT_VHOST || settings.landlordReference,
     tls: process.env.CONDUIT_INSECURE === 'true' ? false : true,
     username: process.env.CONDUIT_USER || settings.landlordReference,
@@ -72,9 +72,11 @@ const baseConfiguration: Config = {
     enableDb: false,
     logging: {
         loglevel: settings.logging.level,
-        human: settings.logging.human
+        human: settings.logging.human,
+        suppressRemote: process.env.CONDUIT_SUPPRESS_REMOTE === 'true' ? true : settings.logging.suppressRemote
     },
     sqlConfig: sqlConfig,
+    httpTimeout: process.env.CONDUIT_HTTP_TIMEOUT ? Number(process.env.CONDUIT_HTTP_TIMEOUT) : settings.httpTimeout,
     plugins: settings.plugins
 };
 
@@ -86,6 +88,6 @@ baseConfiguration.enableDb = baseConfiguration.alert.usesDb
 
 export const configuration = baseConfiguration;
 
-export async function loadConfig(): Promise<string> {
+export async function loadConfig(): Promise<Config> {
     return baseConfiguration;
 }

@@ -1,7 +1,6 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
 import { connect as amqpConnect } from 'amqp-connection-manager';
-import { RabbitConnectionManager, IRabbitConnectionManager } from './service/rabbitConnectionManager';
 import { configuration } from './config/config';
 import { TYPES } from './global/types';
 import { DeviceConsumer } from './deviceConsumer';
@@ -13,23 +12,32 @@ import { NotificationConsumer } from './notificationConsumer';
 import { PropertyConsumer } from './propertyConsumer';
 import { ReadingConsumer } from './readingConsumer';
 import { ActionDispatcher, ActionExecutor } from './actions/actionExecutor';
-import { WebhookDispatcher, RabbitConsumeConfig } from 'homelink-stash-sdk';
+import { WebhookDispatcher, RabbitConsumeConfig, RabbitPublisherService } from 'homelink-stash-sdk';
 import { Dispatcher as SnsDispatcher } from './actions/sns/dispatcher';
-import { InstanceLogger } from './utility/logger';
+import { Dispatcher as DatabaseDispatcher } from './actions/database/dispatcher';
 import { ILogger } from 'homelink-stash-sdk';
+import { IRabbitConnectionManager, RabbitConnectionManager } from 'homelink-stash-sdk/services/rabbitmq/rabbitConnectionManager';
+import { IRabbitPublisherService } from 'homelink-stash-sdk/services/rabbitmq/rabbitPublisherService';
+import { InstanceLogger } from './utility/logging/instanceLogger';
 
 let DependencyInjectionContainer = new Container();
 
-const rabbitUrl = configuration.rabbitHost.port
-    ? `${configuration.rabbitHost.host}:${configuration.rabbitHost.port}`
-    : configuration.rabbitHost.host;
+function getConnectionManager(vhost: string): IRabbitConnectionManager {
+    const rabbitUrl = configuration.rabbitHost.port
+        ? `${configuration.rabbitHost.host}:${configuration.rabbitHost.port}`
+        : configuration.rabbitHost.host;
 
-const protocol = configuration.rabbitHost.tls ? 'amqps://' : 'amqp://';
-const connectionString = `${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${configuration.rabbitHost.vhost?.toLowerCase()}`;
-const amqpConnectionManager = amqpConnect([connectionString]);
-const rabbitConnectionManager = new RabbitConnectionManager(amqpConnectionManager, rabbitUrl!);
+    const protocol = configuration.rabbitHost.tls ? 'amqps://' : 'amqp://';
+    const connectionString = `${protocol}${configuration.rabbitHost.username}:${configuration.rabbitHost.password}@${rabbitUrl}/${vhost}`;
+    const amqpConnectionManager = amqpConnect([connectionString]);
+    return new RabbitConnectionManager(amqpConnectionManager, rabbitUrl!, logger);
 
-DependencyInjectionContainer.bind<IRabbitConnectionManager>(TYPES.RabbitConnectionManager).toConstantValue(rabbitConnectionManager);
+}
+
+const logger = new InstanceLogger();
+
+const primaryConnection = getConnectionManager(configuration.rabbitHost.vhost?.toLowerCase()!);
+DependencyInjectionContainer.bind<IRabbitConnectionManager>(TYPES.RabbitConnectionManager).toConstantValue(primaryConnection);
 DependencyInjectionContainer.bind<SqlDbConnection>(TYPES.SqlDbConnection).to(SqlDbConnection).inSingletonScope();
 DependencyInjectionContainer.bind<ActionExecutor>(TYPES.ActionExecutor).to(ActionExecutor).inSingletonScope();
 
@@ -59,16 +67,20 @@ DependencyInjectionContainer.bind<ConsumerBase>(TYPES.ReadingConsumer).to(Readin
 DependencyInjectionContainer.bind<ISnsClient>(TYPES.ReadingSnsClient).to(ReadingSnsClient).inSingletonScope();
 
 // Actions
-const webhookDispatcher = new WebhookDispatcher(configuration);
+const webhookDispatcher = new WebhookDispatcher(configuration, logger);
 DependencyInjectionContainer.bind<ActionDispatcher>(TYPES.webhookDispatcher).toConstantValue(webhookDispatcher);
 
-const snsDispatcher = new SnsDispatcher(configuration);
+const snsDispatcher = new SnsDispatcher(configuration, logger);
 DependencyInjectionContainer.bind<ActionDispatcher>(TYPES.snsDispatcher).toConstantValue(snsDispatcher);
 
-const databaseDispatcher = new SnsDispatcher(configuration);
+const databaseDispatcher = new DatabaseDispatcher(configuration, logger);
 DependencyInjectionContainer.bind<ActionDispatcher>(TYPES.databaseDispatcher).toConstantValue(databaseDispatcher);
 
-// Utility
-DependencyInjectionContainer.bind<ILogger>(TYPES.Logger).to(InstanceLogger).inSingletonScope();
+// Logging
+DependencyInjectionContainer.bind<ILogger>(TYPES.Logger).toConstantValue(logger);
+
+const dataforwardConnection = getConnectionManager('dataforward');
+const rabbitPublisher = new RabbitPublisherService(configuration.rabbitHost, logger, dataforwardConnection);
+DependencyInjectionContainer.bind<IRabbitPublisherService>(TYPES.RabbitPublisher).toConstantValue(rabbitPublisher);
 
 export { DependencyInjectionContainer };
