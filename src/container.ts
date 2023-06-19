@@ -12,7 +12,7 @@ import { NotificationConsumer } from './notificationConsumer';
 import { PropertyConsumer } from './propertyConsumer';
 import { ReadingConsumer } from './readingConsumer';
 import { ActionDispatcher, ActionExecutor } from './actions/actionExecutor';
-import { WebhookDispatcher, RabbitConsumeConfig, RabbitPublisherService } from 'homelink-stash-sdk';
+import { WebhookDispatcher, RabbitConsumeConfig, RabbitPublisherService, NoopRabbitPublisherService } from 'homelink-stash-sdk';
 import { Dispatcher as SnsDispatcher } from './actions/sns/dispatcher';
 import { Dispatcher as DatabaseDispatcher } from './actions/database/dispatcher';
 import { ILogger } from 'homelink-stash-sdk';
@@ -79,7 +79,9 @@ DependencyInjectionContainer.bind<ActionDispatcher>(TYPES.databaseDispatcher).to
 // Logging
 DependencyInjectionContainer.bind<ILogger>(TYPES.Logger).toConstantValue(logger);
 
-if (!configuration.logging.suppressRemote) {
+if (configuration.logging.suppressRemote) {
+    DependencyInjectionContainer.bind<IRabbitPublisherService>(TYPES.RabbitPublisher).toConstantValue(new NoopRabbitPublisherService());
+} else {
     const dataforwardConnection = getConnectionManager('dataforward');
     const rabbitPublisher = new RabbitPublisherService(configuration.rabbitHost, logger, dataforwardConnection);
     DependencyInjectionContainer.bind<IRabbitPublisherService>(TYPES.RabbitPublisher).toConstantValue(rabbitPublisher);
