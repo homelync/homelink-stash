@@ -36,7 +36,7 @@ export async function initialisePlugins(): Promise<void> {
                 const Registration = require(`./plugins/${p.name}/registration`);
                 const plugin = new Registration(DependencyInjectionContainer, configuration, TYPES);
                 Logger.info(`Initialising plugin ${p.name}`);
-                await plugin.init();
+                await plugin.init(DependencyInjectionContainer, configuration, TYPES);
                 Logger.info(`Plugin ${p.name} successfully initialised`);
                 Logger.info(`Plugin ${p.name} successfully registered`);
             } catch (err) {
