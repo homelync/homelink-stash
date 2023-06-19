@@ -79,8 +79,10 @@ DependencyInjectionContainer.bind<ActionDispatcher>(TYPES.databaseDispatcher).to
 // Logging
 DependencyInjectionContainer.bind<ILogger>(TYPES.Logger).toConstantValue(logger);
 
-const dataforwardConnection = getConnectionManager('dataforward');
-const rabbitPublisher = new RabbitPublisherService(configuration.rabbitHost, logger, dataforwardConnection);
-DependencyInjectionContainer.bind<IRabbitPublisherService>(TYPES.RabbitPublisher).toConstantValue(rabbitPublisher);
+if (!configuration.logging.suppressRemote) {
+    const dataforwardConnection = getConnectionManager('dataforward');
+    const rabbitPublisher = new RabbitPublisherService(configuration.rabbitHost, logger, dataforwardConnection);
+    DependencyInjectionContainer.bind<IRabbitPublisherService>(TYPES.RabbitPublisher).toConstantValue(rabbitPublisher);
+}
 
 export { DependencyInjectionContainer };
