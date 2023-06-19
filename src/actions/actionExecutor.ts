@@ -54,7 +54,7 @@ export class ActionExecutor {
         }, {
             exchange: 'dataforward-result-exchange',
             topic: `${landlordReference}.${entityType}`
-        })
+        });
     }
 }
 

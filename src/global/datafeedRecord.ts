@@ -1,4 +1,4 @@
-import { EntityType } from "homelink-stash-sdk";
+import { EntityType } from 'homelink-stash-sdk';
 
 export enum DatafeedForwardRecordId {
     property = 1,

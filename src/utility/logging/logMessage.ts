@@ -1,6 +1,5 @@
 import { configuration } from '../../config/config';
 import { replaceErrors } from './loggingUtilities';
-import { inspect } from 'util'
 
 const os = require('os');
 

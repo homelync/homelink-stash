@@ -1,6 +1,6 @@
-import { ILogger } from "homelink-stash-sdk";
-import { injectable } from "inversify";
-import { Logger } from "../logger";
+import { ILogger } from 'homelink-stash-sdk';
+import { injectable } from 'inversify';
+import { Logger } from '../logger';
 
 @injectable()
 export class InstanceLogger implements ILogger {

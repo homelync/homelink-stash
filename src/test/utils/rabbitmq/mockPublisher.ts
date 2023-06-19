@@ -4,6 +4,7 @@ import { IRabbitPublisherService } from 'homelink-stash-sdk/services/rabbitmq/ra
 import { DataForwardResult, ILogger } from 'homelink-stash-sdk/types/logging';
 
 export class MockRabbitPublisherService implements IRabbitPublisherService {
-    public async publish(message: DataForwardResult, publishConfig: RabbitPublishConfig){
+    public async publish(message: DataForwardResult, publishConfig: RabbitPublishConfig) {
+        console.log(message);
     }
 }
