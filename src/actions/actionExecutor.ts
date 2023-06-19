@@ -38,7 +38,7 @@ export class ActionExecutor {
             return;
         }
 
-        const landlordReference = payload.landlordReference;
+        const landlordReference = payload.landlordReference.toLowerCase();
 
         await this.resultPublisher.publish({
             registrationId: getDatafeedForwardRecordId(entityType),
