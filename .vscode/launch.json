@@ -21,7 +21,7 @@
             "env": {
                 "TZ": "UTC",
                 "CONDUIT_INSECURE": "false",
-                "NODE_ENV": "local"
+                "NODE_ENV": "production"
             }
         },
         {
