@@ -71,7 +71,7 @@ const baseConfiguration: Config = {
     rabbitHost: rabbitHostConfig,
     enableDb: false,
     logging: {
-        loglevel: settings.logging.level,
+        loglevel: process.env.LOG_LEVEL || settings.logging.level,
         human: settings.logging.human,
         suppressRemote: process.env.CONDUIT_SUPPRESS_REMOTE === 'true' ? true : settings.logging.suppressRemote
     },
