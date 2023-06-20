@@ -22,13 +22,13 @@ export class ActionExecutor {
         Logger.debug(`executing action ${entityConfig.actionType} for ${entityType}`);
         try {
             const dispatcherStatus = await dispatcher.dispatch(payload, entityType);
-            this.recordResult(config, entityType, payload, dispatcherStatus, true);
+            await this.recordResult(config, entityType, payload, dispatcherStatus, true);
         } catch (err) {
             const msg = `error executing action ${entityConfig.actionType} for ${entityType}. ${err.message}`;
             Logger.error(msg, err);
 
             const dispatcherStatus = err.statusCode;
-            this.recordResult(config, entityType, payload, dispatcherStatus, false, msg);
+            await this.recordResult(config, entityType, payload, dispatcherStatus, false, msg);
             throw err;
         }
     }

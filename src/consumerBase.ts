@@ -29,7 +29,7 @@ export class ConsumerBase {
         this.channel = connectionManager.connection.createChannel({
             publishTimeout: configuration.rabbitHost.publishTimeoutMs,
             setup: function (channel: Channel) {
-                channel.prefetch(rabbitConsumeConfig.prefetch || 1000);
+                channel.prefetch(rabbitConsumeConfig.prefetch || 100);
                 channel.consume(rabbitConsumeConfig.queue, async (msg: ConsumeMessage | null): Promise<void> => {
                     if (msg) {
 
@@ -54,7 +54,7 @@ export class ConsumerBase {
                             }
 
                             await actionExecutor.execute(configuration, messageType, payload);
-                            channel.ack(msg);
+                            await channel.ack(msg);
 
                         } catch (exp) {
                             const err = 'Error processing message: ' + msg.content.toString();

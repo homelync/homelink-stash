@@ -84,15 +84,15 @@ logger.configure({
     levels: {
         error: 0,
         warn: 1,
-        metric: 2,
-        info: 3,
+        info: 2,
+        metric: 3,
         http: 4,
         verbose: 5,
         debug: 6
     }
 });
 
-export type Level = 'error' | 'warn' | 'metric' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
+export type Level = 'error' | 'warn' | 'info' | 'metric' | 'http' | 'verbose' | 'debug' | 'silly';
 
 export const stream = {
     write: function (message, encoding) {

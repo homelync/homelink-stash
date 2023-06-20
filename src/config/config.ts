@@ -76,7 +76,7 @@ const baseConfiguration: Config = {
         suppressRemote: process.env.CONDUIT_SUPPRESS_REMOTE === 'true' ? true : settings.logging.suppressRemote
     },
     sqlConfig: sqlConfig,
-    httpTimeout: process.env.CONDUIT_HTTP_TIMEOUT ? Number(process.env.CONDUIT_HTTP_TIMEOUT) : settings.httpTimeout,
+    httpTimeout: process.env.CONDUIT_HTTP_TIMEOUT ? Number(process.env.CONDUIT_HTTP_TIMEOUT) : Number(settings.httpTimeout),
     plugins: settings.plugins
 };
 

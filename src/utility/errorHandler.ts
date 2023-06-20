@@ -52,10 +52,15 @@ async function requeue(rejectReason: string, channel: Channel, exchange: string,
             headers: { 'x-reject-reason': rejectReason }
         });
     } catch (err: any) {
-        Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
-        await channel.publish(exchange, msg.fields.routingKey, msg.content, {
-            persistent: true
-        });
+
+        try {
+            Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
+            await channel.publish(exchange, msg.fields.routingKey, msg.content, {
+                persistent: true
+            });
+        } catch (innerErr: any) {
+            Logger.error('Unable to publish deadletter', innerErr);
+        }
     }
     await channel.ack(msg);
 }
