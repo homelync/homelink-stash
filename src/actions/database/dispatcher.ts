@@ -1,9 +1,8 @@
-import { Config, ILogger, SqlConfig, StatusCode } from 'homelink-stash-sdk';
+import { ActionDispatcher, Config, ILogger, SqlConfig, StatusCode } from 'homelink-stash-sdk';
 import { DependencyInjectionContainer } from '../../container';
 import { TYPES } from '../../global/types';
 import { EntityType } from '../../model/types';
 import { Logger } from '../../utility/logger';
-import { ActionDispatcher } from '../actionExecutor';
 import { SqlDbConnection } from './sqlDbConnection';
 
 export class Dispatcher implements ActionDispatcher {
@@ -11,12 +10,12 @@ export class Dispatcher implements ActionDispatcher {
     constructor(private config: Config, private logger: ILogger) {
     }
 
-    public async dispatch(payload: object, entityType: EntityType): Promise<any> {
+    public async dispatch(payload: object, entityType: EntityType): Promise<number> {
         const sqlConfig = this.config.sqlConfig;
-        await this.execute(payload, sqlConfig, entityType);
+        return await this.execute(payload, sqlConfig, entityType);
     }
 
-    public async execute(payload: object, sqlConfig: SqlConfig, entityType: EntityType): Promise<any> {
+    public async execute(payload: object, sqlConfig: SqlConfig, entityType: EntityType): Promise<number> {
 
         try {
             const database = sqlConfig.database;

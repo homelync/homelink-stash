@@ -1,10 +1,11 @@
 import { expect } from 'chai';
 import { TestHttpServer } from '../utils/webhooks/testServer';
-import { ActionDispatcher, ActionExecutor } from '../../actions/actionExecutor';
+import { ActionExecutor } from '../../actions/actionExecutor';
 import 'reflect-metadata';
 import { DependencyInjectionContainer } from '../../container';
 import { TYPES } from '../../global/types';
 import { MockRabbitPublisherService } from '../utils/rabbitmq/mockPublisher';
+import { ActionDispatcher } from 'homelink-stash-sdk';
 
 describe(`Action Executor`, () => {
 

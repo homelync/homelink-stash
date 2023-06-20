@@ -11,8 +11,8 @@ import { AlertSnsClient, DeviceSnsClient, ISnsClient, NotificationSnsClient, Pro
 import { NotificationConsumer } from './notificationConsumer';
 import { PropertyConsumer } from './propertyConsumer';
 import { ReadingConsumer } from './readingConsumer';
-import { ActionDispatcher, ActionExecutor } from './actions/actionExecutor';
-import { WebhookDispatcher, RabbitConsumeConfig, RabbitPublisherService, NoopRabbitPublisherService } from 'homelink-stash-sdk';
+import { ActionExecutor } from './actions/actionExecutor';
+import { WebhookDispatcher, RabbitConsumeConfig, RabbitPublisherService, NoopRabbitPublisherService, ActionDispatcher } from 'homelink-stash-sdk';
 import { Dispatcher as SnsDispatcher } from './actions/sns/dispatcher';
 import { Dispatcher as DatabaseDispatcher } from './actions/database/dispatcher';
 import { ILogger } from 'homelink-stash-sdk';

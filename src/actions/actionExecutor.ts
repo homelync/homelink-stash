@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Config, getDescriptionForMessage } from 'homelink-stash-sdk';
+import { ActionDispatcher, Config, getDescriptionForMessage } from 'homelink-stash-sdk';
 import { EntityType } from '../model/types';
 import 'reflect-metadata';
 import { Logger } from '../utility/logger';
@@ -56,9 +56,4 @@ export class ActionExecutor {
             topic: `${landlordReference}.${entityType}`
         });
     }
-}
-
-export interface ActionDispatcher {
-    dispatch(payload: object, entityType: EntityType): Promise<any>;
-    execute(payload: object, config: any, entityType: EntityType): Promise<any>;
 }
