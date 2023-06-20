@@ -11,8 +11,3 @@ export enum DatafeedForwardRecordId {
 export function getDatafeedForwardRecordId(entityType: EntityType): number {
     return DatafeedForwardRecordId[entityType];
 }
-
-export enum ActionResultCode {
-    success = 2000,
-    failure = 5000
-}

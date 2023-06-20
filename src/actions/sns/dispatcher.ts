@@ -1,8 +1,7 @@
-import { Config, ILogger } from 'homelink-stash-sdk';
+import { Config, ILogger, StatusCode } from 'homelink-stash-sdk';
 import { inspect } from 'util';
 import { SnsConfig } from '../../config/snsConfig';
 import { DependencyInjectionContainer } from '../../container';
-import { ActionResultCode } from '../../global/datafeedRecord';
 import { TYPES } from '../../global/types';
 import { EntityType } from '../../model/types';
 import { Logger } from '../../utility/logger';
@@ -32,7 +31,7 @@ export class Dispatcher implements ActionDispatcher {
       Logger.error(msg, inspect(err));
 
       const error = new Error(msg);
-      (error as any).statusCode = ActionResultCode.failure;
+      (error as any).statusCode = StatusCode.failure;
       throw error;
     }
   }
