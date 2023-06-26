@@ -1,6 +1,6 @@
 {
   "name": "homelink-homelinkstash",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Consumer for messages",
   "main": "index.js",
   "directories": {
