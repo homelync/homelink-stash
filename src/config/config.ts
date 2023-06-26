@@ -1,17 +1,45 @@
-import { RabbitHostConfig, SqlConfig, EntityConfig, Config } from 'homelink-stash-sdk';
+import { RabbitHostConfig, SqlConfig, EntityConfig, Config, SqlDialect, AuthenticationType } from 'homelink-stash-sdk';
 import { EntitySettings, getSettings } from './settings';
 
 const isDocker = process.env.IS_DOCKER === 'true';
 const settings = getSettings();
 
+function buildEntitySettingsFromEnv(entity: string): EntitySettings | null {
+    const entityName = entity.toUpperCase();
+    const entityKey = `ENTITY_${entityName}`;
+    const entityEnabled = process.env[`${entityKey}_ENABLED`];
+    const entityHasEnvConfig = entityEnabled === 'false' || entityEnabled === 'true';
+    if (!entityHasEnvConfig) {
+        return null;
+    }
+    return {
+        enabled: entityEnabled === 'true',
+        action: process.env[`${entityKey}_ACTION`]!,
+        sns: {
+            topic: process.env[`${entityKey}_SNS_TOPIC`]!,
+            clientId: process.env[`${entityKey}_SNS_CLIENTID`]!,
+            secret: process.env[`${entityKey}_SNS_SECRET`]!
+        },
+        webhook: {
+            endpoint: process.env[`${entityKey}_WEBHOOK_ENDPOINT`]!,
+            authenticationMethod: process.env[`${entityKey}_WEBHOOK_AUTHENTICATION_METHOD`]! as AuthenticationType,
+            successCodes: process.env[`${entityKey}_WEBHOOK_SUCCESS_CODES`] || '200',
+            method: process.env[`${entityKey}_WEBHOOK_METHOD`]!,
+            username: process.env[`${entityKey}_WEBHOOK_USERNAME`]!,
+            password: process.env[`${entityKey}_WEBHOOK_PASSWORD`]!
+        }
+    };
+}
+
 function buildEntityConfig(entity: string): EntityConfig {
     try {
-        const landlordReference = settings.landlordReference.toLowerCase();
+        const landlordReference = process.env.CONDUIT_VHOST || settings.landlordReference.toLowerCase();
         const entityName = entity;
-        const entitySettings: EntitySettings = settings.entities[entityName];
+        const environmentEntitySettings = buildEntitySettingsFromEnv(entity);
+        const entitySettings: EntitySettings = environmentEntitySettings || settings.entities[entityName];
         const entityConfig: EntityConfig = {
             consume: {
-                deadLetterExchange: `${settings.landlordReference}.${entity}.deadletter`,
+                deadLetterExchange: `${landlordReference}.${entity}.deadletter`,
                 queue: `${landlordReference}.${entity}`,
                 failedRoutingKey: '#',
                 maxRetry: 1,
@@ -41,13 +69,13 @@ function buildEntityConfig(entity: string): EntityConfig {
 }
 
 const sqlConfig: SqlConfig = {
-    dialect: settings.database.dialect,
-    host: settings.database.host,
-    database: settings.database.database,
-    user: settings.database.user,
-    password: settings.database.password,
-    port: settings.database.port,
-    timezone: settings.database.timezone
+    dialect: process.env.ACTION_DB_DIALACT as SqlDialect || settings.database.dialect,
+    host: process.env.ACTION_DB_HOST || settings.database.host,
+    database: process.env.ACTION_DB_DATABASE || settings.database.database,
+    user: process.env.ACTION_DB_USER || settings.database.user,
+    password: process.env.ACTION_DB_PASSWORD || settings.database.password,
+    port: process.env.ACTION_DB_PORT ? Number(process.env.ACTION_DB_PORT) : settings.database.port,
+    timezone: process.env.ACTION_DB_TIMEZONE || settings.database.timezone
 };
 
 const rabbitHostConfig: RabbitHostConfig = {
@@ -72,7 +100,7 @@ const baseConfiguration: Config = {
     enableDb: false,
     logging: {
         loglevel: process.env.LOG_LEVEL || settings.logging.level,
-        human: settings.logging.human,
+        human: process.env.LOG_HUMAN === 'true' ? true : settings.logging.human,
         suppressRemote: process.env.CONDUIT_SUPPRESS_REMOTE === 'true' ? true : settings.logging.suppressRemote
     },
     sqlConfig: sqlConfig,

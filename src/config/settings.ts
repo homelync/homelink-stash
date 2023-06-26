@@ -32,7 +32,7 @@ export class SqlSettings {
     public timezone: string = '+00:00';
 }
 
-export type AuthenticationType = 'none' | 'basic' | 'apiKey' | 'basic' | 'bearer';
+export type AuthenticationType = 'none' | 'basic' | 'apiKey' | 'bearer';
 
 export class HookSettings {
     public endpoint: string = '';
@@ -76,7 +76,12 @@ export class Settings {
 export function getSettings(): Settings {
     const settings = new Settings();
 
-    const userSettings = require('../settings.json');
-    const parsedSettings = plainToClassFromExist(settings, userSettings);
-    return parsedSettings;
+    try {
+        const userSettings = require('../settings.json');
+        const parsedSettings = plainToClassFromExist(settings, userSettings);
+        return parsedSettings;
+    } catch (err) {
+        console.warn('Unable to find settings file, assuming you are using environment variables');
+    }
+    return settings;
 }
