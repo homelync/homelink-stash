@@ -3,7 +3,9 @@
         "ts-node/register"
     ],
     "mocha.files.glob": "src/test/**/*.spec.ts",
-    "mocha.parallelTests": 8,
+    "mocha.parallelTests": 1,
+    "typescript.validate.enable": true,
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
     "mocha.env": {
         "NODE_ENV": "local",
         "TZ": "UTC" // This

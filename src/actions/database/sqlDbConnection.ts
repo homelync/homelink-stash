@@ -1,6 +1,7 @@
 
 import { injectable } from 'inversify';
-import Knex from 'knex';
+import { Knex } from 'knex/types';
+const knex = require('knex');
 import { configuration } from '../../config/config';
 
 @injectable()
@@ -19,7 +20,7 @@ export class SqlDbConnection {
             connectTimeout: 30000,
             enableArithAbort: false
         };
-        this.knex = Knex({
+        this.knex = knex({
             client: sql.dialect,
             debug: false,
             dialect: sql.dialect,
@@ -42,7 +43,7 @@ export class SqlDbConnection {
         return this.knex.table(tableName);
     }
 
-    public async executeRaw(query: string,  trx?: Knex.Transaction): Promise<any> {
+    public async executeRaw(query: string, trx?: Knex.Transaction): Promise<any> {
         const builder = this.knex.raw(query);
 
         if (trx) {

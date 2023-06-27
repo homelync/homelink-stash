@@ -10,15 +10,18 @@
             "runtimeArgs": [
                 "--nolazy",
                 "-r",
-                "ts-node/register"
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main"
             ],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
             "outputCapture": "std",
-            "envFile": "${workspaceFolder}/src/env/.env.local",
             "env": {
-                "TZ": "UTC"
+                "TZ": "UTC",
+                "CONDUIT_INSECURE": "false",
+                "NODE_ENV": "production"
             }
         },
         {

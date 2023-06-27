@@ -32,4 +32,13 @@ export const TYPES = {
     NotificationClient: Symbol('NotificationClient'),
     NotificationConsumer: Symbol('NotificationConsumer'),
     NotificationSnsClient: Symbol('NotificationSnsClient'),
+
+    // Actions
+    webhookDispatcher: Symbol('WebhookDispatcher'),
+    snsDispatcher: Symbol('SnsDispatcher'),
+    databaseDispatcher: Symbol('DatabaseDispatcher'),
+
+    // Logging
+    Logger: Symbol('Logger'),
+    RabbitPublisher: Symbol('RabbitPublisher')
 };

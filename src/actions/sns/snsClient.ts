@@ -1,5 +1,5 @@
 import { injectable, unmanaged } from 'inversify';
-import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
+import { PublishCommand, PublishResponse, SNSClient } from '@aws-sdk/client-sns';
 import { configuration } from '../../config/config';
 
 export interface ISnsClient {
@@ -19,7 +19,7 @@ export abstract class SnsClient implements ISnsClient {
         }
     }
 
-    public async publish(topic: string, message: any) {
+    public async publish(topic: string, message: any): Promise<PublishResponse> {
 
         const params = {
             Message: JSON.stringify(message),
@@ -27,7 +27,7 @@ export abstract class SnsClient implements ISnsClient {
         };
 
         const command = new PublishCommand(params);
-        await this.awsSnsClient.send(command);
+        return await this.awsSnsClient.send(command);
     }
 }
 

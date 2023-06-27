@@ -1,5 +1,5 @@
 # Build Layer
-FROM node:16.8-alpine3.13 as build
+FROM node:16.18.0-alpine as build
 RUN apk add --update --no-cache \
     python3 \
     make \
@@ -15,7 +15,7 @@ RUN npm prune --production
 
 #Second Layer
 
-FROM node:16.8-alpine3.13
+FROM node:16.18.0-alpine
 RUN apk add --update --no-cache curl
 
 EXPOSE 3000
