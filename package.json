@@ -1,6 +1,6 @@
 {
   "name": "homelink-homelinkstash",
-  "version": "1.0.0",
+  "version": "1.0.23",
   "description": "Consumer for messages",
   "main": "index.js",
   "directories": {
@@ -13,8 +13,10 @@
   "scripts": {
     "nvm:default": ". ~/.nvm/nvm.sh && nvm alias default 16.18.0",
     "lint": "tslint -c \"./tslint.json\" -p \"./tsconfig.json\"",
-    "docker:build": "docker build . -t aicohomelink/stash:latest",
-    "docker:push": "docker push aicohomelink/stash:latest",
+    "echo": "echo $npm_package_version",
+    "docker:tag": "npm version patch -m \"Bump to version %s\" && npm run docker:build",
+    "docker:build": "docker build . -t aicohomelink/stash:latest -t aicohomelink/stash:$npm_package_version",
+    "docker:push": "docker push aicohomelink/stash:latest && docker push aicohomelink/stash:$npm_package_version",
     "test:unit": "mocha --exit --require ts-node/register src/test/unit/**/*.ts",
     "test:e2e": "cross-env TZ=UTC mocha --exit --timeout 30000 --require ts-node/register src/test/e2e/**/*.spec.ts",
     "test:integration": "mocha --exit --timeout 30000 --require ts-node/register src/test/integration/**/*.spec.ts",
@@ -26,7 +28,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/amqp-connection-manager": "^2.0.10",
     "@types/colors": "^1.2.1",
     "@types/knex": "^0.16.1",
     "@types/mocha": "^10.0.1",
@@ -48,11 +49,12 @@
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.4.1",
-    "amqp-connection-manager": "^3.2.0",
+    "amqp-connection-manager": "4.1.10",
     "amqplib": "^0.8.0",
     "class-transformer": "^0.5.1",
-    "inversify": "^5.0.1",
-    "knex": "^0.21.17",
+    "homelink-stash-sdk": "^0.0.25",
+    "inversify": "^5.1.1",
+    "knex": "^2.4.2",
     "mssql": "^6.4.1",
     "mysql": "^2.16.0",
     "mysql2": "^2.3.3",

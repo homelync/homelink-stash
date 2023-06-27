@@ -1,7 +1,6 @@
 import { Channel, ConsumeMessage } from 'amqplib';
 import { injectable, unmanaged } from 'inversify';
 
-import { IRabbitConnectionManager } from './service/rabbitConnectionManager';
 import { ChannelWrapper } from 'amqp-connection-manager';
 
 import { Logger } from './utility/logger';
@@ -11,8 +10,9 @@ import { EventCode } from './model/eventCode';
 
 import { Timing } from './utility/timing';
 import { MessageType } from './model/messageType';
-import { RabbitConsumeConfig } from './config/rabbitConfig';
+import { RabbitConsumeConfig } from 'homelink-stash-sdk';
 import { ActionExecutor } from './actions/actionExecutor';
+import { IRabbitConnectionManager } from 'homelink-stash-sdk/services/rabbitmq/rabbitConnectionManager';
 
 @injectable()
 export class ConsumerBase {
@@ -29,7 +29,7 @@ export class ConsumerBase {
         this.channel = connectionManager.connection.createChannel({
             publishTimeout: configuration.rabbitHost.publishTimeoutMs,
             setup: function (channel: Channel) {
-                channel.prefetch(rabbitConsumeConfig.prefetch || 1000);
+                channel.prefetch(rabbitConsumeConfig.prefetch || 100);
                 channel.consume(rabbitConsumeConfig.queue, async (msg: ConsumeMessage | null): Promise<void> => {
                     if (msg) {
 
@@ -54,7 +54,7 @@ export class ConsumerBase {
                             }
 
                             await actionExecutor.execute(configuration, messageType, payload);
-                            channel.ack(msg);
+                            await channel.ack(msg);
 
                         } catch (exp) {
                             const err = 'Error processing message: ' + msg.content.toString();

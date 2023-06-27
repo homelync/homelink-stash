@@ -1,6 +1,6 @@
 import { expect } from 'chai';
+import { TestLogger, WebhookDispatcher as Dispatcher } from 'homelink-stash-sdk';
 import { TestHttpServer } from '../utils/webhooks/testServer';
-const Dispatcher = require('../../actions/webhook/dispatcher');
 
 describe(`Webhook Dispatcher`, () => {
 
@@ -22,12 +22,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('post');
         });
 
@@ -44,12 +44,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('put');
         });
 
@@ -66,12 +66,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('delete');
         });
 
@@ -88,12 +88,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('patch');
         });
 
@@ -110,15 +110,15 @@ describe(`Webhook Dispatcher`, () => {
                         password: ''
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data', statusCode: 404 });
+            await dispatcher.dispatch({ test: 'data', statusCode: 404 }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
             expect(webServer.webHookLog[0].payload).to.eql({ test: 'data', statusCode: 404 });
             expect(webServer.webHookLog[0].method).to.eql('post');
         });
-    })
+    });
 
     describe(`Basic Auth`, () => {
 
@@ -138,12 +138,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'supersecret'
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('post');
         });
     });
@@ -166,12 +166,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'my-secret'
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('post');
         });
     });
@@ -194,12 +194,12 @@ describe(`Webhook Dispatcher`, () => {
                         password: 'MYTOKEN123'
                     }
                 }
-            } as any, 'device');
+            } as any, new TestLogger());
 
-            await dispatcher.dispatch({ test: 'data' });
+            await dispatcher.dispatch({ test: 'data' }, 'device');
 
             expect(webServer.webHookLog.length).to.eql(1);
-            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' });
+            expect(webServer.webHookLog[0].payload).to.eql({ test: 'data' }, 'device');
             expect(webServer.webHookLog[0].method).to.eql('post');
         });
     });

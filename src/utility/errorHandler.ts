@@ -1,6 +1,6 @@
 import { Logger } from '../utility/logger';
 import { Channel, ConsumeMessage } from 'amqplib';
-import { RabbitConsumeConfig } from '../config/rabbitConfig';
+import { RabbitConsumeConfig } from 'homelink-stash-sdk';
 import { EventCode } from '../model/eventCode';
 import { MessageType } from '../model/messageType';
 
@@ -52,12 +52,17 @@ async function requeue(rejectReason: string, channel: Channel, exchange: string,
             headers: { 'x-reject-reason': rejectReason }
         });
     } catch (err: any) {
-        Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
-        await channel.publish(exchange, msg.fields.routingKey, msg.content, {
-            persistent: true
-        });
+
+        try {
+            Logger.warn(`Reject reason could not be published: ${rejectReason}.`, err.message);
+            await channel.publish(exchange, msg.fields.routingKey, msg.content, {
+                persistent: true
+            });
+        } catch (innerErr: any) {
+            Logger.error('Unable to publish deadletter', innerErr);
+        }
     }
-    channel.ack(msg);
+    await channel.ack(msg);
 }
 
 function getRejectReason(exp: Error, config: RabbitConsumeConfig): string {

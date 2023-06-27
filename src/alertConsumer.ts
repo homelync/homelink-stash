@@ -1,10 +1,10 @@
 import { ConsumerBase } from './consumerBase';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './global/types';
-import { IRabbitConnectionManager } from './service/rabbitConnectionManager';
-import { RabbitConsumeConfig } from './config/rabbitConfig';
+import { RabbitConsumeConfig } from 'homelink-stash-sdk';
 import { MessageType } from './model/messageType';
 import { ActionExecutor } from './actions/actionExecutor';
+import { IRabbitConnectionManager } from 'homelink-stash-sdk/services/rabbitmq/rabbitConnectionManager';
 @injectable()
 export class AlertConsumer extends ConsumerBase {
     constructor(@inject(TYPES.ActionExecutor) actionExecutor: ActionExecutor,
