@@ -1,0 +1,113 @@
+{
+    "landlordReference": "YourLandlordReference",
+    "password": "YourPassword",
+    "httpTimeout": 2000,
+    "database": {
+        "dialect": "mysql",
+        "host": "",
+        "user": "",
+        "password": "",
+        "port": 3306,
+        "database": "integration",
+        "timezone": "+00:00"
+    },
+    "logging": {
+        "level": "debug",
+        "human": true,
+        "suppressRemote": false
+    },
+    "system": {
+        "broker": {
+            "host": "conduit.live.homelync.io",
+            "port": 5672
+        }
+    },
+    "plugins": [],
+    "entities": {
+        "device": {
+            "action": "",
+            "sns": {
+                "topic": "",
+                "clientId": "",
+                "secret": ""
+            },
+            "webhook": {
+                "endpoint": "",
+                "authenticationMethod": "",
+                "successCodes": "200",
+                "method": "POST",
+                "username": "",
+                "password": ""
+            },
+            "enabled": false
+        },
+        "property": {
+            "action": "",
+            "sns": {
+                "topic": "",
+                "clientId": "",
+                "secret": ""
+            },
+            "webhook": {
+                "endpoint": "",
+                "authenticationMethod": "none",
+                "successCodes": "200",
+                "method": "POST",
+                "username": "",
+                "password": ""
+            },
+            "enabled": false
+        },
+        "notification": {
+            "action": "",
+            "sns": {
+                "topic": "",
+                "clientId": "",
+                "secret": ""
+            },
+            "webhook": {
+                "endpoint": "",
+                "authenticationMethod": "none",
+                "successCodes": "200",
+                "method": "POST",
+                "username": "",
+                "password": ""
+            },
+            "enabled": false
+        },
+        "alert": {
+            "action": "",
+            "sns": {
+                "topic": "",
+                "clientId": "",
+                "secret": ""
+            },
+            "webhook": {
+                "endpoint": "",
+                "authenticationMethod": "none",
+                "successCodes": "200",
+                "method": "POST",
+                "username": "",
+                "password": ""
+            },
+            "enabled": false
+        },
+        "reading": {
+            "action": "",
+            "sns": {
+                "topic": "",
+                "clientId": "",
+                "secret": ""
+            },
+            "webhook": {
+                "endpoint": "",
+                "authenticationMethod": "none",
+                "successCodes": "200",
+                "method": "POST",
+                "username": "",
+                "password": ""
+            },
+            "enabled": false
+        }
+    }
+}
