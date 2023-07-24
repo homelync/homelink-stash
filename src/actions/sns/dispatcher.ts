@@ -22,7 +22,7 @@ export class Dispatcher implements ActionDispatcher {
     const snsClient = DependencyInjectionContainer.get<SnsClient>(TYPES[`${titleCase(entityType)}SnsClient`]);
 
     try {
-      this.logger.debug(`Publishing to Sns`, {});
+      this.logger.debug(`Publishing to Sns ${snsConfig.topic}`, {});
       const response = await snsClient.publish(snsConfig.topic, payload);
       this.logger.debug(`Published to Sns with message id  ${response.MessageId} and sequenceNumber: ${response.SequenceNumber}`, {});
     } catch (err) {
