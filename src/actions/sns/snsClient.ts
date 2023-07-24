@@ -12,10 +12,12 @@ export abstract class SnsClient implements ISnsClient {
     private awsSnsClient: SNSClient;
 
     constructor(@unmanaged() clientId?: string, @unmanaged() clientSecret?: string) {
+        const region = configuration.awsRegion;
+
         if (clientId && clientSecret) {
-            this.awsSnsClient = new SNSClient({ region: 'eu-west-2', credentials: { accessKeyId: clientId, secretAccessKey: clientSecret } });
+            this.awsSnsClient = new SNSClient({ region: region, credentials: { accessKeyId: clientId, secretAccessKey: clientSecret } });
         } else {
-            this.awsSnsClient = new SNSClient({ region: 'eu-west-2' });
+            this.awsSnsClient = new SNSClient({ region: region });
         }
     }
 

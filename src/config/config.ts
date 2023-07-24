@@ -98,6 +98,7 @@ const baseConfiguration: Config = {
     property: buildEntityConfig('property'),
     rabbitHost: rabbitHostConfig,
     enableDb: false,
+    awsRegion: process.env.AWS_REGION || 'eu-west-2',
     logging: {
         loglevel: process.env.LOG_LEVEL || settings.logging.level,
         human: process.env.LOG_HUMAN === 'true' ? true : settings.logging.human,

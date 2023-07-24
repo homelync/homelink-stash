@@ -18,7 +18,10 @@ const messageTypeMappings = {
     alert: ['002-create-alert-table.ts'],
     reading: ['003-create-reading-table.ts'],
     notification: ['004-create-notification-table.ts', '005-create-notification-alert-table.ts'],
-    device: ['006-create-device-table.ts']
+    device: ['006-create-device-table.ts'],
+    insightComponent: ['007-create-insight-component-table.ts'],
+    insight: ['008-create-Insight-table.ts'],
+    event: ['009-create-event-table.ts']
 };
 
 export async function runMigrations() {
