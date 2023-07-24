@@ -1,0 +1,826 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+        -
+            Label:
+                default: "Your VPC Settings (required)"
+            Parameters:
+                - VpcId
+                - SubnetIds
+        -
+            Label:
+                default: "Stack Settings"
+            Parameters:
+              - CreateNewEcsCluster
+              - EcsClusterName
+              - AutoCreateSnsTopics
+        -
+            Label:
+                default: "Homelink Settings - Probably no need to change"
+            Parameters:
+                - Host
+                - Port
+                - VirtualHost
+                - User
+                - Password
+        -
+            Label:
+                default: "Primary Stash Settings"
+            Parameters:
+                - PropertyEnabled
+                - PropertyAction
+                - DeviceEnabled
+                - DeviceAction
+                - AlertEnabled
+                - AlertAction
+                - NotificationEnabled
+                - NotificationAction
+                - ReadingEnabled
+                - ReadingAction
+        -
+            Label:
+                default: "Database Settings"
+            Parameters:
+                - DatabaseDialect
+                - DatabaseHost
+                - DatabaseUser
+                - DatabasePassword
+                - DatabaseName
+                - DatabaseTimeZone
+                - DatabasePort
+        -
+            Label:
+                default: "Logging"
+            Parameters:
+                - LogHuman
+                - LogLevel
+        -
+            Label:
+                default: "Advanced Property Settings"
+            Parameters:
+                - PropertySnsTopicArn
+                - PropertySnsClientId
+                - PropertySnsSecret
+                - PropertyWebhookEndpoint
+                - PropertyWebhookAuthenticationType
+                - PropertyWebhookSuccessCodes
+                - PropertyWebhookMethod
+                - PropertyWebhookUsername
+                - PropertyWebhookPassword
+        -
+            Label:
+                default: "Advanced Device Settings"
+            Parameters:
+                - DeviceSnsTopicArn
+                - DeviceSnsClientId
+                - DeviceSnsSecret
+                - DeviceWebhookEndpoint
+                - DeviceWebhookAuthenticationType
+                - DeviceWebhookSuccessCodes
+                - DeviceWebhookMethod
+                - DeviceWebhookUsername
+                - DeviceWebhookPassword
+        -
+            Label:
+                default: "Advanced Alert Settings"
+            Parameters:
+                - AlertSnsTopicArn
+                - AlertSnsClientId
+                - AlertSnsSecret
+                - AlertWebhookEndpoint
+                - AlertWebhookAuthenticationType
+                - AlertWebhookSuccessCodes
+                - AlertWebhookMethod
+                - AlertWebhookUsername
+                - AlertWebhookPassword
+        -
+            Label:
+                default: "Advanced Notification Settings"
+            Parameters:
+                - NotificationSnsTopicArn
+                - NotificationSnsClientId
+                - NotificationSnsSecret
+                - NotificationWebhookEndpoint
+                - NotificationWebhookAuthenticationType
+                - NotificationWebhookSuccessCodes
+                - NotificationWebhookMethod
+                - NotificationWebhookUsername
+                - NotificationWebhookPassword
+        -
+            Label:
+                default: "Advanced Reading Settings"
+            Parameters:
+                - ReadingSnsTopicArn
+                - ReadingSnsClientId
+                - ReadingSnsSecret
+                - ReadingWebhookEndpoint
+                - ReadingWebhookAuthenticationType
+                - ReadingWebhookSuccessCodes
+                - ReadingWebhookMethod
+                - ReadingWebhookUsername
+                - ReadingWebhookPassword
+Description: ""
+Conditions:
+    ShouldCreateNewEcsCluster: !Equals
+        - !Ref CreateNewEcsCluster
+        - true
+    PropertySnsAction: !Equals
+        - !Ref PropertyAction
+        - sns
+    DeviceSnsAction: !Equals
+        - !Ref DeviceAction
+        - sns
+    AlertSnsAction: !Equals
+        - !Ref AlertAction
+        - sns
+    NotificationSnsAction: !Equals
+        - !Ref NotificationAction
+        - sns
+    ReadingSnsAction: !Equals
+        - !Ref ReadingAction
+        - sns
+    ShouldCreateSnsTopics: !Equals
+        - !Ref AutoCreateSnsTopics
+        - true
+    ShouldCreatePropertySns: !And
+        - !Condition PropertySnsAction
+        - !Condition ShouldCreateSnsTopics
+    ShouldCreateDeviceSns: !And
+        - !Condition DeviceSnsAction
+        - !Condition ShouldCreateSnsTopics
+    ShouldCreateAlertSns: !And
+        - !Condition AlertSnsAction
+        - !Condition ShouldCreateSnsTopics
+    ShouldCreateNotificationSns: !And
+        - !Condition NotificationSnsAction
+        - !Condition ShouldCreateSnsTopics
+    ShouldCreateReadingSns: !And
+        - !Condition ReadingSnsAction
+        - !Condition ShouldCreateSnsTopics
+
+Parameters:
+    VpcId:
+        Type: AWS::EC2::VPC::Id
+    SubnetIds:
+        Type: List<AWS::EC2::Subnet::Id>
+        Description: Select at least two subnets in your selected VPC.
+    EcsClusterName:
+        Type: String
+        Description: The name of your ECS Cluster, see CreateNewEcsCluster to determine if a new cluster is created or an existing one is used
+        Default: "homelink"
+    CreateNewEcsCluster:
+        Type: String
+        Description: Should a new ecs cluster be created or should an existing one be used
+        Default: true
+        AllowedValues:
+          - "true"
+          - "false"
+    Host:
+        Type: String
+        MinLength: 1
+        Description: Conduit host
+    User:
+        Type: String
+        MinLength: 1
+        Description: Conduit user
+    Port:
+        Type: Number
+        MinValue: 999
+        Description: Conduit port
+    VirtualHost:
+        Type: String
+        MinLength: 1
+        Description: Conduit virtual host, this is the same as your landlord reference
+    Password:
+        Type: String
+        NoEcho: true
+        MinLength: 5
+        Description: Conduit password
+    AutoCreateSnsTopics:
+        Type: String
+        Default: "true"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Should SNS topics be automatically created for all entities with SNS Actions
+    LogHuman:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Logging uses a human friendly format
+    LogLevel:
+        Type: String
+        Default: "info"
+        Description: Logging output level
+        AllowedValues:
+            - "error"
+            - "warn"
+            - "info"
+            - "debug"
+    DatabaseDialect:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "mysql"
+            - "mssql"
+            - "pg"
+    DatabaseHost:
+        Type: String
+    DatabaseUser:
+        Type: String
+    DatabasePassword:
+        Type: String
+        NoEcho: true
+    DatabaseName:
+        Type: String
+    DatabaseTimeZone:
+        Type: String
+    DatabasePort:
+        Type: Number
+        Default: 0
+    PropertyEnabled:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Enable consumption of Property messages
+    PropertyAction:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "database"
+            - "webhook"
+            - "sns"
+    PropertySnsTopicArn:
+        Type: String
+        Default: ""
+    PropertySnsClientId:
+        Type: String
+        Default: ""
+    PropertySnsSecret:
+        Type: String
+        NoEcho: true
+        Default: ""
+    PropertyWebhookEndpoint:
+        Type: String
+        Default: ""
+    PropertyWebhookAuthenticationType:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "none"
+            - "basic"
+            - "apiKey"
+            - "bearer"
+    PropertyWebhookSuccessCodes:
+        Type: String
+        Default: "200,201,202"
+    PropertyWebhookMethod:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "PATCH"
+            - "DELETE"
+    PropertyWebhookUsername:
+        Type: String
+        Default: ""
+    PropertyWebhookPassword:
+        Type: String
+        NoEcho: true
+        Default: ""
+    DeviceEnabled:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Enable consumption of device messages
+    DeviceAction:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "database"
+            - "webhook"
+            - "sns"
+    DeviceSnsTopicArn:
+        Type: String
+        Default: ""
+    DeviceSnsClientId:
+        Type: String
+        Default: ""
+    DeviceSnsSecret:
+        Type: String
+        NoEcho: true
+        Default: ""
+    DeviceWebhookEndpoint:
+        Type: String
+        Default: ""
+    DeviceWebhookAuthenticationType:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "none"
+            - "basic"
+            - "apiKey"
+            - "bearer"
+    DeviceWebhookSuccessCodes:
+        Type: String
+        Default: "200,201,202"
+    DeviceWebhookMethod:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "PATCH"
+            - "DELETE"
+    DeviceWebhookUsername:
+        Type: String
+        Default: ""
+    DeviceWebhookPassword:
+        Type: String
+        NoEcho: true
+        Default: ""
+    AlertEnabled:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Enable consumption of Alert messages
+    AlertAction:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "database"
+            - "webhook"
+            - "sns"
+    AlertSnsTopicArn:
+        Type: String
+        Default: ""
+    AlertSnsClientId:
+        Type: String
+        Default: ""
+    AlertSnsSecret:
+        Type: String
+        Default: ""
+    AlertWebhookEndpoint:
+        Type: String
+        Default: ""
+    AlertWebhookAuthenticationType:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "none"
+            - "basic"
+            - "apiKey"
+            - "bearer"
+    AlertWebhookSuccessCodes:
+        Type: String
+        Default: "200,201,202"
+    AlertWebhookMethod:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "PATCH"
+            - "DELETE"
+    AlertWebhookUsername:
+        Type: String
+        Default: ""
+    AlertWebhookPassword:
+        Type: String
+        NoEcho: true
+        Default: ""
+    NotificationEnabled:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Enable consumption of Notification messages
+    NotificationAction:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "database"
+            - "webhook"
+            - "sns"
+    NotificationSnsTopicArn:
+        Type: String
+        Default: ""
+    NotificationSnsClientId:
+        Type: String
+        Default: ""
+    NotificationSnsSecret:
+        Type: String
+        Default: ""
+        NoEcho: true
+    NotificationWebhookEndpoint:
+        Type: String
+        Default: ""
+    NotificationWebhookAuthenticationType:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "none"
+            - "basic"
+            - "apiKey"
+            - "bearer"
+    NotificationWebhookSuccessCodes:
+        Type: String
+        Default: "200,201,202"
+    NotificationWebhookMethod:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "PATCH"
+            - "DELETE"
+    NotificationWebhookUsername:
+        Type: String
+        Default: ""
+    NotificationWebhookPassword:
+        Type: String
+        NoEcho: true
+        Default: ""
+    ReadingEnabled:
+        Type: String
+        Default: "false"
+        AllowedValues:
+            - "true"
+            - "false"
+        Description: Enable consumption of Reading messages
+    ReadingAction:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "database"
+            - "webhook"
+            - "sns"
+    ReadingSnsTopicArn:
+        Type: String
+        Default: ""
+    ReadingSnsClientId:
+        Type: String
+        Default: ""
+    ReadingSnsSecret:
+        Type: String
+        Default: ""
+        NoEcho: true
+    ReadingWebhookEndpoint:
+        Type: String
+    ReadingWebhookAuthenticationType:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "none"
+            - "basic"
+            - "apiKey"
+            - "bearer"
+    ReadingWebhookSuccessCodes:
+        Type: String
+        Default: "200,201,202"
+    ReadingWebhookMethod:
+        Type: String
+        Default: ""
+        AllowedValues:
+            - ""
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "PATCH"
+            - "DELETE"
+    ReadingWebhookUsername:
+        Type: String
+        Default: ""
+    ReadingWebhookPassword:
+        Type: String
+        NoEcho: true
+        Default: ""
+Resources:
+    PropertySNSTopic:
+        Type: "AWS::SNS::Topic"
+        Condition: ShouldCreatePropertySns
+        Properties:
+            DisplayName: ""
+            TopicName: "homelink-stash-property"
+    PropertySNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Condition: ShouldCreatePropertySns
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"${PropertySNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
+              - !Ref PropertySNSTopic
+    DeviceSNSTopic:
+        Type: "AWS::SNS::Topic"
+        Condition: ShouldCreateDeviceSns
+        Properties:
+            DisplayName: ""
+            TopicName: "homelink-stash-device"
+    DeviceSNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Condition: ShouldCreateDeviceSns
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"${DeviceSNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
+              - !Ref DeviceSNSTopic
+    AlertSNSTopic:
+        Type: "AWS::SNS::Topic"
+        Condition: ShouldCreateAlertSns
+        Properties:
+            DisplayName: ""
+            TopicName: "homelink-stash-alert"
+    AlertSNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Condition: ShouldCreateAlertSns
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"${AlertSNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
+              - !Ref AlertSNSTopic
+    NotificationSNSTopic:
+        Type: "AWS::SNS::Topic"
+        Condition: ShouldCreateNotificationSns
+        Properties:
+            DisplayName: ""
+            TopicName: "homelink-stash-notification"
+    NotificationSNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Condition: ShouldCreateNotificationSns
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"${NotificationSNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
+              - !Ref NotificationSNSTopic
+    ReadingSNSTopic:
+        Type: "AWS::SNS::Topic"
+        Condition: ShouldCreateReadingSns
+        Properties:
+            DisplayName: ""
+            TopicName: "homelink-stash-reading"
+    ReadingSNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Condition: ShouldCreateReadingSns
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"${ReadingSNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
+              - !Ref ReadingSNSTopic
+
+    ECSCluster:
+        Type: "AWS::ECS::Cluster"
+        Condition: ShouldCreateNewEcsCluster
+        Properties:
+            ClusterName: "homelink"
+    LogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: !Sub "/ecs/homelink-stash"
+
+    ECSTaskDefinition:
+        Type: "AWS::ECS::TaskDefinition"
+        DependsOn: LogGroup
+        Properties:
+            ContainerDefinitions:
+              -
+                Environment:
+                  - Name: "AWS_REGION"
+                    Value: !Sub "${AWS::Region}"
+                  - Name: "CONDUIT_HOST"
+                    Value: !Ref Host
+                  - Name: "CONDUIT_PORT"
+                    Value: !Ref Port
+                  - Name: "CONDUIT_PASSWORD"
+                    Value: !Ref Password
+                  - Name: "CONDUIT_USER"
+                    Value: !Ref User
+                  - Name: "CONDUIT_VHOST"
+                    Value: !Ref VirtualHost
+                  - Name: "LOG_LEVEL"
+                    Value: !Ref LogLevel
+                  - Name: "LOG_HUMAN"
+                    Value: !Ref LogHuman
+                  - Name: "ACTION_DB_DIALACT"
+                    Value: !Ref DatabaseDialect
+                  - Name: "ACTION_DB_HOST"
+                    Value: !Ref DatabaseHost
+                  - Name: "ACTION_DB_USER"
+                    Value: !Ref DatabaseUser
+                  - Name: "ACTION_DB_PASSWORD"
+                    Value: !Ref DatabasePassword
+                  - Name: "ACTION_DB_DATABASE"
+                    Value: !Ref DatabaseName
+                  - Name: "ACTION_DB_TIMEZONE"
+                    Value: !Ref DatabaseTimeZone
+                  - Name: "ACTION_DB_PORT"
+                    Value: !Ref DatabasePort
+                  - Name: "ENTITY_PROPERTY_ENABLED"
+                    Value: !Ref PropertyEnabled
+                  - Name: "ENTITY_PROPERTY_ACTION"
+                    Value: !Ref PropertyAction
+                  - Name: "ENTITY_PROPERTY_SNS_TOPIC"
+                    Value:
+                        'Fn::If':
+                            - ShouldCreatePropertySns
+                            - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:homelink-stash-property"
+                            - !Ref PropertySnsTopicArn
+                  - Name: "ENTITY_PROPERTY_SNS_CLIENTID"
+                    Value: !Ref PropertySnsClientId
+                  - Name: "ENTITY_PROPERTY_SNS_SECRET"
+                    Value: !Ref PropertySnsSecret
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_ENDPOINT"
+                    Value: !Ref PropertyWebhookEndpoint
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_AUTHENTICATION_METHOD"
+                    Value: !Ref PropertyWebhookAuthenticationType
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_SUCCESS_CODES"
+                    Value: !Ref PropertyWebhookSuccessCodes
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_METHOD"
+                    Value: !Ref PropertyWebhookMethod
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_USERNAME"
+                    Value: !Ref PropertyWebhookUsername
+                  - Name: "ENTITY_PROPERTY_WEBHOOK_PASSWORD"
+                    Value: !Ref PropertyWebhookPassword
+                  - Name: "ENTITY_DEVICE_ENABLED"
+                    Value: !Ref DeviceEnabled
+                  - Name: "ENTITY_DEVICE_ACTION"
+                    Value: !Ref DeviceAction
+                  - Name: "ENTITY_DEVICE_SNS_TOPIC"
+                    Value:
+                        'Fn::If':
+                            - ShouldCreateDeviceSns
+                            - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:homelink-stash-device"
+                            - !Ref DeviceSnsTopicArn
+                  - Name: "ENTITY_DEVICE_SNS_CLIENTID"
+                    Value: !Ref DeviceSnsClientId
+                  - Name: "ENTITY_DEVICE_SNS_SECRET"
+                    Value: !Ref DeviceSnsSecret
+                  - Name: "ENTITY_DEVICE_WEBHOOK_ENDPOINT"
+                    Value: !Ref DeviceWebhookEndpoint
+                  - Name: "ENTITY_DEVICE_WEBHOOK_AUTHENTICATION_METHOD"
+                    Value: !Ref DeviceWebhookAuthenticationType
+                  - Name: "ENTITY_DEVICE_WEBHOOK_SUCCESS_CODES"
+                    Value: !Ref DeviceWebhookSuccessCodes
+                  - Name: "ENTITY_DEVICE_WEBHOOK_METHOD"
+                    Value: !Ref DeviceWebhookMethod
+                  - Name: "ENTITY_DEVICE_WEBHOOK_USERNAME"
+                    Value: !Ref DeviceWebhookUsername
+                  - Name: "ENTITY_DEVICE_WEBHOOK_PASSWORD"
+                    Value: !Ref DeviceWebhookPassword
+                  - Name: "ENTITY_ALERT_ENABLED"
+                    Value: !Ref AlertEnabled
+                  - Name: "ENTITY_ALERT_ACTION"
+                    Value: !Ref AlertAction
+                  - Name: "ENTITY_ALERT_SNS_TOPIC"
+                    Value:
+                        'Fn::If':
+                            - ShouldCreateAlertSns
+                            - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:homelink-stash-alert"
+                            - !Ref AlertSnsTopicArn
+                  - Name: "ENTITY_ALERT_SNS_CLIENTID"
+                    Value: !Ref AlertSnsClientId
+                  - Name: "ENTITY_ALERT_SNS_SECRET"
+                    Value: !Ref AlertSnsSecret
+                  - Name: "ENTITY_ALERT_WEBHOOK_ENDPOINT"
+                    Value: !Ref AlertWebhookEndpoint
+                  - Name: "ENTITY_ALERT_WEBHOOK_AUTHENTICATION_METHOD"
+                    Value: !Ref AlertWebhookAuthenticationType
+                  - Name: "ENTITY_ALERT_WEBHOOK_SUCCESS_CODES"
+                    Value: !Ref AlertWebhookSuccessCodes
+                  - Name: "ENTITY_ALERT_WEBHOOK_METHOD"
+                    Value: !Ref AlertWebhookMethod
+                  - Name: "ENTITY_ALERT_WEBHOOK_USERNAME"
+                    Value: !Ref AlertWebhookUsername
+                  - Name: "ENTITY_ALERT_WEBHOOK_PASSWORD"
+                    Value: !Ref AlertWebhookPassword
+                  - Name: "ENTITY_NOTIFICATION_ENABLED"
+                    Value: !Ref NotificationEnabled
+                  - Name: "ENTITY_NOTIFICATION_ACTION"
+                    Value: !Ref NotificationAction
+                  - Name: "ENTITY_NOTIFICATION_SNS_TOPIC"
+                    Value:
+                        'Fn::If':
+                            - ShouldCreateNotificationSns
+                            - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:homelink-stash-notification"
+                            - !Ref NotificationSnsTopicArn
+                  - Name: "ENTITY_NOTIFICATION_SNS_CLIENTID"
+                    Value: !Ref NotificationSnsClientId
+                  - Name: "ENTITY_NOTIFICATION_SNS_SECRET"
+                    Value: !Ref NotificationSnsSecret
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_ENDPOINT"
+                    Value: !Ref NotificationWebhookEndpoint
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_AUTHENTICATION_METHOD"
+                    Value: !Ref NotificationWebhookAuthenticationType
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_SUCCESS_CODES"
+                    Value: !Ref NotificationWebhookSuccessCodes
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_METHOD"
+                    Value: !Ref NotificationWebhookMethod
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_USERNAME"
+                    Value: !Ref NotificationWebhookUsername
+                  - Name: "ENTITY_NOTIFICATION_WEBHOOK_PASSWORD"
+                    Value: !Ref NotificationWebhookUsername
+                  - Name: "ENTITY_READING_ENABLED"
+                    Value: !Ref ReadingEnabled
+                  - Name: "ENTITY_READING_ACTION"
+                    Value: !Ref ReadingAction
+                  - Name: "ENTITY_READING_SNS_TOPIC"
+                    Value:
+                        'Fn::If':
+                            - ShouldCreateReadingSns
+                            - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:homelink-stash-reading"
+                            - !Ref ReadingSnsTopicArn
+                  - Name: "ENTITY_READING_SNS_CLIENTID"
+                    Value: !Ref ReadingSnsClientId
+                  - Name: "ENTITY_READING_SNS_SECRET"
+                    Value: !Ref ReadingSnsSecret
+                  - Name: "ENTITY_READING_WEBHOOK_ENDPOINT"
+                    Value: !Ref ReadingWebhookEndpoint
+                  - Name: "ENTITY_READING_WEBHOOK_AUTHENTICATION_METHOD"
+                    Value: !Ref ReadingWebhookAuthenticationType
+                  - Name: "ENTITY_READING_WEBHOOK_SUCCESS_CODES"
+                    Value: !Ref ReadingWebhookSuccessCodes
+                  - Name: "ENTITY_READING_WEBHOOK_METHOD"
+                    Value: !Ref ReadingWebhookMethod
+                  - Name: "ENTITY_READING_WEBHOOK_USERNAME"
+                    Value: !Ref ReadingWebhookUsername
+                  - Name: "ENTITY_READING_WEBHOOK_PASSWORD"
+                    Value: !Ref ReadingWebhookPassword
+                Essential: true
+                Image: !Sub "aicohomelink/stash:1.0.26"
+                LogConfiguration:
+                    LogDriver: "awslogs"
+                    Options:
+                        awslogs-group: !Ref LogGroup
+                        awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: "ecs"
+                Name: "homelink-stash"
+            Family: "homelink-stash"
+            TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+            ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+            NetworkMode: "awsvpc"
+            RequiresCompatibilities:
+              - "FARGATE"
+            Cpu: "512"
+            Memory: "1024"
+
+    ContainerSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupDescription: "ecs-homelink-stash-container"
+            GroupName: "ecs-homelink-stash-container"
+            VpcId: !Ref VpcId
+            SecurityGroupEgress:
+              -
+                CidrIp: "0.0.0.0/0"
+                IpProtocol: "-1"
+
+    ECSService:
+        Type: "AWS::ECS::Service"
+        Properties:
+            ServiceName: "homelink-stash"
+            Cluster:
+                'Fn::If':
+                    - ShouldCreateNewEcsCluster
+                    - !GetAtt ECSCluster.Arn
+                    - !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${EcsClusterName}"
+            DesiredCount: 1
+            LaunchType: "FARGATE"
+            PlatformVersion: "LATEST"
+            TaskDefinition: !Ref ECSTaskDefinition
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
+                DeploymentCircuitBreaker:
+                    Enable: false
+                    Rollback: false
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: "ENABLED"
+                    SecurityGroups:
+                      - !Ref ContainerSecurityGroup
+                    Subnets: !Split [',', !Join [',', !Ref SubnetIds]]
+            SchedulingStrategy: "REPLICA"
