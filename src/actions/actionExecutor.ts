@@ -26,9 +26,6 @@ export class ActionExecutor {
         } catch (err) {
             const msg = `error executing action ${entityConfig.actionType} for ${entityType}. ${err.message}`;
             Logger.error(msg, err);
-
-            const dispatcherStatus = err.statusCode;
-            await this.recordResult(config, entityType, payload, dispatcherStatus, false, msg);
             throw err;
         }
     }
